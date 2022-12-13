@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/red_shade_2" >
+
+    <Button
+        android:id="@+id/loginBtn"
+        tools:ignore="TextContrastCheck"
+        android:layout_width="320dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="5dp"
+        android:backgroundTint="@color/white_shade_1"
+        android:elevation="10dp"
+        android:stateListAnimator="@null"
+        android:text="@string/log_in"
+        android:textColor="@color/text_red"
+        app:cornerRadius="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordInputField" />
+
+    <Button
+        android:id="@+id/registerRedirectBtn"
+        tools:ignore="TextContrastCheck"
+        android:layout_width="320dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="44dp"
+        android:backgroundTint="@color/red_shade_1"
+        android:elevation="10dp"
+        android:stateListAnimator="@null"
+        android:text="@string/register"
+        android:textColor="@color/text_white"
+        app:cornerRadius="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/loginBtn" />
+
+    <EditText
+        android:id="@+id/usernameInputField"
+        android:layout_width="320dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="432dp"
+        android:autofillHints="@string/username"
+        android:background="@drawable/edit_text_background"
+        android:elevation="10dp"
+        android:ems="10"
+        android:hint="@string/username"
+        android:inputType="textPersonName"
+        android:maxLength="15"
+        android:padding="10dp"
+        android:singleLine="true"
+        android:textColor="@color/text_red_half_transparent"
+
+        android:textColorHint="@color/text_red_half_transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/passwordInputField"
+        android:layout_width="320dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginTop="5dp"
+        android:autoText="false"
+        android:autofillHints="@string/password"
+        android:background="@drawable/edit_text_background"
+        android:elevation="10dp"
+        android:ems="10"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:maxLength="15"
+
+        android:padding="10dp"
+        android:singleLine="true"
+        android:textColor="@color/text_red_half_transparent"
+        android:textColorHint="@color/text_red_half_transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/usernameInputField" />
+
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="128dp"
+        android:layout_marginTop="25dp"
+        android:contentDescription="@string/logo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo_svg" />
+
+    <ImageView
+        android:id="@+id/bicycle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="68dp"
+        android:layout_marginBottom="25dp"
+        android:contentDescription="@string/bicycle_image"
+        app:layout_constraintBottom_toTopOf="@+id/usernameInputField"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/bicycle" />
+
+    <TextView
+        android:id="@+id/titleName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="128dp"
+        android:layout_marginTop="-14dp"
+        android:letterSpacing="0.22"
+        android:text="@string/app_name"
+        android:textColor="#FFEBEE"
+        android:textSize="28sp"
+        android:textStyle="italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo" />
+</androidx.constraintlayout.widget.ConstraintLayout>
