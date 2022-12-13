@@ -8,41 +8,41 @@
 
     <Button
         android:id="@+id/loginBtn"
-        tools:ignore="TextContrastCheck"
         android:layout_width="320dp"
         android:layout_height="55dp"
         android:layout_marginStart="44dp"
-        android:layout_marginTop="5dp"
         android:backgroundTint="@color/white_shade_1"
         android:elevation="10dp"
         android:stateListAnimator="@null"
         android:text="@string/log_in"
         android:textColor="@color/text_red"
         app:cornerRadius="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/registerBtn"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordInputField" />
+        tools:ignore="TextContrastCheck" />
 
     <Button
-        android:id="@+id/registerRedirectBtn"
-        tools:ignore="TextContrastCheck"
+        android:id="@+id/registerBtn"
         android:layout_width="320dp"
         android:layout_height="55dp"
         android:layout_marginStart="44dp"
+        android:layout_marginBottom="65dp"
         android:backgroundTint="@color/red_shade_1"
         android:elevation="10dp"
         android:stateListAnimator="@null"
         android:text="@string/register"
         android:textColor="@color/text_white"
         app:cornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginBtn" />
+        tools:ignore="TextContrastCheck" />
 
     <EditText
         android:id="@+id/usernameInputField"
         android:layout_width="320dp"
         android:layout_height="50dp"
         android:layout_marginStart="44dp"
-        android:layout_marginTop="432dp"
+        android:layout_marginBottom="5dp"
         android:autofillHints="@string/username"
         android:background="@drawable/edit_text_background"
         android:elevation="10dp"
@@ -52,18 +52,18 @@
         android:maxLength="15"
         android:padding="10dp"
         android:singleLine="true"
-        android:textColor="@color/text_red_half_transparent"
 
+        android:textColor="@color/text_red_half_transparent"
         android:textColorHint="@color/text_red_half_transparent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/passwordInputField"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/passwordInputField"
         android:layout_width="320dp"
         android:layout_height="50dp"
         android:layout_marginStart="44dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
         android:autoText="false"
         android:autofillHints="@string/password"
         android:background="@drawable/edit_text_background"
@@ -71,14 +71,14 @@
         android:ems="10"
         android:hint="@string/password"
         android:inputType="textPassword"
-        android:maxLength="15"
 
+        android:maxLength="15"
         android:padding="10dp"
         android:singleLine="true"
         android:textColor="@color/text_red_half_transparent"
         android:textColorHint="@color/text_red_half_transparent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usernameInputField" />
+        app:layout_constraintBottom_toTopOf="@+id/loginBtn"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/bicycle"
