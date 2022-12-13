@@ -1,0 +1,29 @@
+App:
+CALL show_leaderboard() - shows full_name and user_experience
+
+--------------------------
+Account:
+CALL register_user(full_name, email, phone_number, password)
+CALL show_user(user_id) - selects id, full_name, user_password, email, phone_number, phone_number
+CALL change_password(user_id, password)
+CALL change_email(user_id, email)
+
+
+
+-------------------------
+Friends:
+
+CALL add_friend(user_id, friend_id) -- currently insta adds on both sides
+CALL show_friends(user_id) - shows full_name, phone_number, friends_since
+CALL delete_friend(user_id, friend_id)
+CALL show_friends_leaderboard(user_id) - shows full_name and user_experience
+
+------------------------------
+
+Travel:
+CALL add_travel_to_user(id, place, city, country)
+
+
+
+
+------------------------------
