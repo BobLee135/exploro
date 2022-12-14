@@ -1,4 +1,4 @@
-package com.example.exploro.views;
+package com.example.exploro.controllers;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import com.example.exploro.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivityController extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

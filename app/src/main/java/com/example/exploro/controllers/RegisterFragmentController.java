@@ -1,4 +1,4 @@
-package com.example.exploro.views;
+package com.example.exploro.controllers;
 
 import android.os.Bundle;
 
@@ -14,20 +14,20 @@ import com.example.exploro.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link RegisterFragment#newInstance} factory method to
+ * Use the {@link RegisterFragmentController#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RegisterFragment extends Fragment {
+public class RegisterFragmentController extends Fragment {
 
-    public RegisterFragment() {
+    public RegisterFragmentController() {
         // Required empty public constructor
     }
 
     /**
      * @return A new instance of fragment RegisterFragment.
      */
-    public static RegisterFragment newInstance() {
-        RegisterFragment fragment = new RegisterFragment();
+    public static RegisterFragmentController newInstance() {
+        RegisterFragmentController fragment = new RegisterFragmentController();
         return fragment;
     }
 
@@ -42,7 +42,7 @@ public class RegisterFragment extends Fragment {
         View view = inflater.inflate(R.layout.register_fragment, container, false);
         Button cancelRegisterBtn = (Button)view.findViewById(R.id.cancelRegistrationBtn);
 
-        LoginFragment loginFragment = new LoginFragment();
+        LoginFragmentController loginFragmentController = new LoginFragmentController();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
         /**
@@ -53,7 +53,7 @@ public class RegisterFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 fragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainer, loginFragment, "loginFragment")
+                        .replace(R.id.fragmentContainer, loginFragmentController, "loginFragment")
                         .addToBackStack(null)
                         .commit();
             }
