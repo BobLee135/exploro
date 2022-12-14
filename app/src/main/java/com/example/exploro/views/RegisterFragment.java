@@ -1,4 +1,4 @@
-package com.example.exploro;
+package com.example.exploro.views;
 
 import android.os.Bundle;
 
@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
+import com.example.exploro.R;
 
 /**
  * A simple {@link Fragment} subclass.
