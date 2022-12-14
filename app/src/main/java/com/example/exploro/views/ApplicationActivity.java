@@ -34,13 +34,6 @@ public class ApplicationActivity extends AppCompatActivity {
             }
         });
 
-        FirebaseApp.initializeApp(ApplicationActivity.this);
-
-        // Write a message to the database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference rootRef = database.getReferenceFromUrl("https://exploro-371514-default-rtdb.europe-west1.firebasedatabase.app/");
-
-        rootRef.setValue("Hello, World!");
     }
 
 }
