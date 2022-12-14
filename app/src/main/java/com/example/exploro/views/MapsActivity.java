@@ -3,6 +3,7 @@ package com.example.exploro.views;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -19,6 +20,10 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.android.PolyUtil;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,6 +43,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
+    private String URL = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        // Build the url with all destinations
+
     }
 
     /**
@@ -64,17 +73,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-/*
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-*/
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-
+        // Send a request to google directions api for the route
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         MediaType mediaType = MediaType.parse("text/plain");
@@ -83,13 +86,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .url("https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs")
                 .get()
                 .build();
-        Response response;
+        Response response = null;
         try {
             response = client.newCall(request).execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        // Display the route on the map
+        try {
+            JSONObject jsonResponse = new JSONObject(response.body().string());
+            JSONArray routesArray = jsonResponse.getJSONArray("routes");
+            JSONObject route = routesArray.getJSONObject(0);
+            JSONObject overview_polyline = route.getJSONObject("overview_polyline");
+            String encodedString = overview_polyline.getString("points");
 
+            List<LatLng> list = PolyUtil.decode(encodedString);
+
+            PolylineOptions lineOptions = new PolylineOptions();
+            lineOptions.addAll(list);
+            lineOptions.width(10);
+            lineOptions.color(Color.RED);
+            mMap.addPolyline(lineOptions);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
