@@ -6,12 +6,32 @@
     android:layout_height="match_parent"
     android:background="@color/red_shade_2">
 
+    <EditText
+        android:id="@+id/fullNameInputField"
+        android:layout_width="320dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="4dp"
+        android:autofillHints="@string/full_name"
+        android:background="@drawable/edit_text_background"
+        android:elevation="10dp"
+        android:ems="10"
+        android:hint="@string/full_name"
+        android:inputType="textPersonName"
+        android:maxLength="15"
+        android:padding="10dp"
+        android:singleLine="true"
+
+        android:textColor="@color/text_red_half_transparent"
+        android:textColorHint="@color/text_red_half_transparent"
+        app:layout_constraintBottom_toTopOf="@+id/emailnputField"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <Button
         android:id="@+id/cancelRegistrationBtn"
         android:layout_width="320dp"
         android:layout_height="55dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="65dp"
+        android:layout_marginBottom="60dp"
         android:backgroundTint="@color/red_shade_1"
         android:elevation="10dp"
         android:stateListAnimator="@null"
@@ -19,6 +39,7 @@
         android:textColor="@color/text_white"
         app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="TextContrastCheck" />
 
@@ -26,8 +47,7 @@
         android:id="@+id/registerPasswordInputField"
         android:layout_width="320dp"
         android:layout_height="50dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="4dp"
         android:autoText="false"
         android:autofillHints="@string/password"
         android:background="@drawable/edit_text_background"
@@ -42,14 +62,14 @@
         android:textColor="@color/text_red_half_transparent"
         android:textColorHint="@color/text_red_half_transparent"
         app:layout_constraintBottom_toTopOf="@+id/registerConfirmPasswordInputField"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/registerConfirmPasswordInputField"
         android:layout_width="320dp"
         android:layout_height="50dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="8dp"
         android:autoText="false"
         android:autofillHints="@string/confirm_password"
         android:background="@drawable/edit_text_background"
@@ -64,50 +84,14 @@
         android:textColor="@color/text_red_half_transparent"
         android:textColorHint="@color/text_red_half_transparent"
         app:layout_constraintBottom_toTopOf="@+id/registerButton"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
-        android:id="@+id/fullNameInputField"
-        android:layout_width="320dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="5dp"
-        android:autofillHints="@string/full_name"
-        android:background="@drawable/edit_text_background"
-        android:elevation="10dp"
-        android:ems="10"
-        android:hint="@string/full_name"
-        android:inputType="textPersonName"
-        android:maxLength="15"
-        android:padding="10dp"
-        android:singleLine="true"
-
-        android:textColor="@color/text_red_half_transparent"
-        android:textColorHint="@color/text_red_half_transparent"
-        app:layout_constraintBottom_toTopOf="@+id/emailnputField"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/registerButton"
-        android:layout_width="320dp"
-        android:layout_height="55dp"
-        android:layout_marginStart="44dp"
-        android:backgroundTint="@color/white_shade_1"
-        android:elevation="10dp"
-        android:stateListAnimator="@null"
-        android:text="@string/register"
-        android:textColor="@color/text_red"
-        app:cornerRadius="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/cancelRegistrationBtn"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="TextContrastCheck" />
 
     <EditText
         android:id="@+id/emailnputField"
         android:layout_width="320dp"
         android:layout_height="50dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="4dp"
         android:autofillHints="@string/email"
         android:background="@drawable/edit_text_background"
         android:elevation="10dp"
@@ -121,14 +105,14 @@
         android:textColor="@color/text_red_half_transparent"
         android:textColorHint="@color/text_red_half_transparent"
         app:layout_constraintBottom_toTopOf="@+id/registerUsernameInputField"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/registerUsernameInputField"
         android:layout_width="320dp"
         android:layout_height="50dp"
-        android:layout_marginStart="44dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="8dp"
         android:autofillHints="@string/username"
         android:background="@drawable/edit_text_background"
         android:elevation="10dp"
@@ -142,5 +126,22 @@
         android:textColor="@color/text_red_half_transparent"
         android:textColorHint="@color/text_red_half_transparent"
         app:layout_constraintBottom_toTopOf="@+id/registerPasswordInputField"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/registerButton"
+        android:layout_width="320dp"
+        android:layout_height="55dp"
+        android:backgroundTint="@color/white_shade_1"
+        android:elevation="10dp"
+        android:stateListAnimator="@null"
+        android:text="@string/register"
+        android:textColor="@color/text_red"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/cancelRegistrationBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="TextContrastCheck" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
