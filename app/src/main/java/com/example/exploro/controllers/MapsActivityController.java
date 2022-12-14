@@ -1,4 +1,4 @@
-package com.example.exploro.views;
+package com.example.exploro.controllers;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -39,7 +39,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivityController extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
@@ -113,6 +113,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             e.printStackTrace();
         }
     }
-
-
 }

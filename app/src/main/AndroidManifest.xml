@@ -33,14 +33,16 @@
 
         <!-- Maps -->
         <activity
-            android:name=".views.MapsActivity"
+            android:name=".controllers.MapsActivityController"
             android:exported="false"
-            android:label="@string/title_activity_maps" />
+            android:label="@string/title_activity_maps"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"/>
 
         <!-- Main -->
         <activity
-            android:name=".views.MainActivity"
-            android:exported="true">
+            android:name=".controllers.MainActivityController"
+            android:exported="true"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -54,8 +56,9 @@
 
         <!-- Application -->
         <activity
-            android:name=".views.ApplicationActivity"
-            android:exported="false">
+            android:name=".controllers.ApplicationActivityController"
+            android:exported="false"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar">
         </activity>
     </application>
 
