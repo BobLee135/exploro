@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -33,7 +34,13 @@ android {
 }
 
 dependencies {
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+    implementation platform('com.google.firebase:firebase-bom:31.1.1')
+    implementation 'com.google.firebase:firebase-database'
+    implementation 'com.google.gms:google-services:4.3.10'
 
+    implementation 'com.google.maps.android:android-maps-utils:0.5+'
+    implementation 'com.google.maps:google-maps-services:0.2.11'
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
