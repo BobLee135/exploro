@@ -1,4 +1,4 @@
-package com.example.exploro;
+package com.example.exploro.views;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,6 +14,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import com.example.exploro.R;
 
 public class ApplicationActivity extends AppCompatActivity {
 
