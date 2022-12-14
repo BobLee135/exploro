@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "457995838601",
+    "firebase_url": "https://exploro-371514-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "exploro-371514",
+    "storage_bucket": "exploro-371514.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457995838601:android:8901ee76a246d4aacbd258",
+        "android_client_info": {
+          "package_name": "com.example.exploro"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "457995838601-t8oin1cj32th38pi6amfnqkuucfo5uc7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAinenVrp2WXZkc5nlz67a7NP-d9tn3KxE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "457995838601-t8oin1cj32th38pi6amfnqkuucfo5uc7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
