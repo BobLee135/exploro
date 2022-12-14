@@ -30,7 +30,7 @@
         android:backgroundTint="@color/red_shade_1"
         android:elevation="10dp"
         android:stateListAnimator="@null"
-        android:text="@string/register"
+        android:text="@string/register_redirect"
         android:textColor="@color/text_white"
         app:cornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"

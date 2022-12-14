@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">ExplorO</string>
     <string name="log_in">Log in</string>
+    <string name="register_redirect">Register new account</string>
     <string name="register">Register</string>
     <string name="username">Username</string>
     <string name="password">Password</string>
@@ -22,4 +23,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="cancel_registration">Cancel Registration</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="pre_planned_routes">Pre-planned routes</string>
+    <string name="create_route">Create my own route</string>
 </resources>

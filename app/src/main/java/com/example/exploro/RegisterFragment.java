@@ -43,6 +43,10 @@ public class RegisterFragment extends Fragment {
         LoginFragment loginFragment = new LoginFragment();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
+        /**
+         * Cancel register button listener
+         * Go back to login page
+         */
         cancelRegisterBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
