@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.exploro.MessageHelper;
 import com.example.exploro.R;
 
 /**
