@@ -25,4 +25,6 @@
     <string name="title_activity_maps">MapsActivity</string>
     <string name="pre_planned_routes">Pre-planned routes</string>
     <string name="create_route">Create my own route</string>
+    <string name="locations_fragment_title">Top Locations</string>
+    <string name="view_all">View all</string>
 </resources>
