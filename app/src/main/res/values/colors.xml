@@ -13,9 +13,11 @@
     <color name="red_shade_3">#F18383</color>
     <color name="white_shade_1">#F6E7E7</color>
     <color name="white_shade_2">#D9D9D9</color>
+    <color name="white_shade_3">#FCFCFC</color>
     <color name="green_shade_1">#679F59</color>
     <color name="green_shade_2">#B9D3B8</color>
     <color name="yellow_shade_1">#FED18D</color>
+    <color name="transparent">#00000000</color>
 
 
     <color name="text_white">#F6E7E7</color>
