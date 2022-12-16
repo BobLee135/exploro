@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -14,7 +15,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 public class ApplicationActivityController extends AppCompatActivity {
 
-    private BottomSheetBehavior mLocationsBottomSheetBehavior;
+    private LocationsBottomSheetBehavior mLocationsBottomSheetBehavior;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,10 +24,9 @@ public class ApplicationActivityController extends AppCompatActivity {
 
         View bottomSheet = (View) findViewById(R.id.locationBottomSheet);
 
-
-        mLocationsBottomSheetBehavior = LocationsBottomSheetBehavior.from(bottomSheet);
-
-
+        // Get bottom sheet and set it to expanded by default
+        mLocationsBottomSheetBehavior = (LocationsBottomSheetBehavior) LocationsBottomSheetBehavior.from(bottomSheet);
+        mLocationsBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
         Button myButton = (Button) findViewById(R.id.createOwnRouteBtn);
         myButton.setOnClickListener(new View.OnClickListener() {
