@@ -22,11 +22,11 @@ import com.example.exploro.R;
  */
 public class LoginFragmentController extends Fragment {
 
-    private MessageHelper messageHelper;
+    private MessageHelper mMessageHelper;
 
     public LoginFragmentController() {
         // Required empty public constructor
-        messageHelper = new MessageHelper();
+        mMessageHelper = new MessageHelper();
     }
 
     /**
@@ -85,7 +85,7 @@ public class LoginFragmentController extends Fragment {
                 String password = passwordInput.getText().toString();
 
                 if (!isValid(username, password)) {
-                    messageHelper.displaySnackbar("Invalid input", 3, "Error", v);
+                    mMessageHelper.displaySnackbar("Invalid input", 3, "Error", v);
                     return;
                 }
 
