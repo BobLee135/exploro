@@ -32,32 +32,24 @@ public class UserModel {
         //addUser("Dennis", "test", "dennis@gmail.com","898979");
     }
 
+    /*
     public void addUser(String name, String password, String email, String phoneNumber){
         String encodePassword = Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8));
         User user = new User(name, encodePassword, email, phoneNumber);
         user.experience = 0;
         db.child("users").child(name).setValue(user);
-    }
+    }*/
 
-    public void addFriend(String name, String password, String email, String phoneNumber){
+    public User createNewUser(String name, String username, String email, String password) {
+        // Encode password
         String encodePassword = Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8));
-        User user = new User(name, encodePassword, email, phoneNumber);
+
+        User user = new User(name, email, username, password, "8989898");
         user.experience = 0;
-        db.child("users").child(name).setValue(user);
-    }
-
-    public void addTrip(String user, String city, String country, String place){
-        Trips trips = new Trips(city, country, place);
-        db.child("users").child(user).child("trips").push().setValue(trips);
-    }
-
-
-    public int createNewUser(String name, String username, String email, String password) {
-
-
         // TODO: Write new user to database
+        db.child("users").child(username).setValue(user);
 
-        return 0;
+        return user;
     }
 
     /**

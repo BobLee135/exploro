@@ -84,43 +84,34 @@ public class RegisterFragmentController extends Fragment {
                     return;
                 }
 
-                final boolean[] usernameAvailable = {true};
 
+                // Check if username is available
                 userModel.findUsernameInUsers(username, new UserModel.ResultStatus() {
                     @Override
                     public void resultLoaded(List<User> users) {
                         if (!users.isEmpty() && users.get(0) != null) {
-                            usernameAvailable[0] = false;
                             Log.d("RESPONSE", users.get(0).getName().toString());
+                            mMessageHelper.displaySnackbar("Username already taken", 3, "Error", v);
                             return;
                         }
+
+                        // Check if email is available
+                        userModel.findEmailInUsers(email, new UserModel.ResultStatus() {
+                            @Override
+                            public void resultLoaded(List<User> users) {
+                                if (!users.isEmpty() && users.get(0) != null) {
+                                    Log.d("RESPONSE", users.get(0).getEmail().toString());
+                                    mMessageHelper.displaySnackbar("Email already taken", 3, "Error", v);
+                                    return;
+                                }
+                                // Create new user in database
+                                User user = userModel.createNewUser(fullName, username, email, password);
+                                swapFragment(fragmentManager, loginFragmentController);
+                                mMessageHelper.displaySnackbar("User registered", 3, "Correct", v);
+                            }
+                        });
                     }
                 });
-
-                /*
-                // TODO: Check if username and email is available
-                if (!isUsernameAvailable(username))
-                    return -1;
-                if (!isEmailAvailable(email))
-                    return -2;
-*/
-
-                // Create new user in database
-                int resultCode = userModel.createNewUser(fullName, username, email, password);
-
-                // TODO: Handle result code
-                switch (resultCode) {
-                    case 0:
-                        swapFragment(fragmentManager, loginFragmentController);
-                        mMessageHelper.displaySnackbar("User registered", 3, "Correct", v);
-                        break;
-                    case -1:
-                        mMessageHelper.displaySnackbar("Username already taken", 3, "Error", v);
-                        break;
-                    case -2:
-                        mMessageHelper.displaySnackbar("Email already taken", 3, "Error", v);
-                        break;
-                }
             }
         });
 
