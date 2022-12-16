@@ -32,19 +32,61 @@ public class UserModel {
         //addUser("Dennis", "test", "dennis@gmail.com","898979");
     }
 
-    /*
-    public void addUser(String name, String password, String email, String phoneNumber){
-        String encodePassword = Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8));
-        User user = new User(name, encodePassword, email, phoneNumber);
-        user.experience = 0;
-        db.child("users").child(name).setValue(user);
-    }*/
+
+    /**
+     * Authenticate user against database
+     *
+     * @param username - input username
+     * @param password - input password
+     * @param result - Return correctly authenticated users
+     */
+    public void authUser(String username, String password, final ResultStatus result) {
+        db.child("users").child(username).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            List<User> users = new ArrayList<>();
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                // If database error
+                if (!task.isSuccessful()) {
+                    Log.e("firebase", "Error getting data", task.getException());
+                    result.resultLoaded(users);
+                    return;
+                }
+
+                // If no user exist with that username then return
+                if (task.getResult().getValue() == null) {
+                    result.resultLoaded(users);
+                    return;
+                }
+
+                // Authenticate password
+                String aUsername = task.getResult().child("username").getValue().toString();
+                String aPassword = task.getResult().child("password").getValue().toString();
+                Base64.Decoder decoder = Base64.getDecoder();
+                aPassword = new String(decoder.decode(aPassword));
+
+
+                if (password.equals(aPassword))
+                    users.add(task.getResult().getValue(User.class));
+                result.resultLoaded(users);
+            }
+        });
+    }
+
+    /**
+     * Create a new user in database
+     *
+     * @param name - full name of user
+     * @param username - username
+     * @param email - email
+     * @param password - password
+     * @return
+     */
 
     public User createNewUser(String name, String username, String email, String password) {
         // Encode password
         String encodePassword = Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8));
 
-        User user = new User(name, email, username, password, "8989898");
+        User user = new User(name, email, username, encodePassword, "8989898");
         user.experience = 0;
         // TODO: Write new user to database
         db.child("users").child(username).setValue(user);
