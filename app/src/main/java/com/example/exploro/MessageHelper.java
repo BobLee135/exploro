@@ -1,4 +1,4 @@
-package com.example.exploro.controllers;
+package com.example.exploro;
 
 import android.content.Context;
 import android.util.Log;
