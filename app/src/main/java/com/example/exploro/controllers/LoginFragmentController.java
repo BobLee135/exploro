@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,10 @@ import android.widget.EditText;
 
 import com.example.exploro.MessageHelper;
 import com.example.exploro.R;
+import com.example.exploro.models.UserModel;
+import com.example.exploro.models.schemas.User;
+
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -55,6 +60,7 @@ public class LoginFragmentController extends Fragment {
 
         RegisterFragmentController registerFragmentController = new RegisterFragmentController();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        UserModel userModel = new UserModel(getActivity());
 
         /**
          *  Register button listener
@@ -69,14 +75,8 @@ public class LoginFragmentController extends Fragment {
             }
         });
 
-
-
         /**
-        * Login button listener
-        * Launches application acitivty
-         *
-        * TODO: Handle user input and authenticate user. If authentication failed show error message.
-         * Otherwise launch application activity and login user.
+        * Handle user input and authenticate user. If authentication failed show error message. Otherwise launch application activity and login user.
          */
         loginBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -89,15 +89,33 @@ public class LoginFragmentController extends Fragment {
                     return;
                 }
 
-                // TODO: Authenticate user through UserModel
+                // Authenticate user through UserModel
+                userModel.authUser(username, password, new UserModel.ResultStatus() {
+                    @Override
+                    public void resultLoaded(List<User> users) {
+                        // Check results
+                        if(users.isEmpty() || users.get(0) == null) {
+                            mMessageHelper.displaySnackbar("Could not authenticate user", 3, "Error", v);
+                            return;
+                        }
 
-                // Empty input fields
-                usernameInput.setText("");
-                passwordInput.setText("");
+                        // Empty input fields
+                        usernameInput.setText("");
+                        passwordInput.setText("");
+
+                        // Send user info to new activity
+                        Intent intent = new Intent(getActivity(), ApplicationActivityController.class);
+                        intent.putExtra("USER_fullname", users.get(0).getName());
+                        intent.putExtra("USER_username", users.get(0).getUsername());
+                        intent.putExtra("USER_email", users.get(0).getEmail());
+                        intent.putExtra("USER_phonenumber", users.get(0).getPhoneNumber());
+
+                        // Launch app activity
+                        startActivity(intent);
+                    }
+                });
 
 
-                // Launch app activity
-                startActivity(new Intent(getActivity(), ApplicationActivityController.class));
             }
         });
         // Inflate the layout for this fragment

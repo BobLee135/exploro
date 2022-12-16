@@ -106,7 +106,7 @@
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/bottomSheetDrag"
                 android:layout_width="match_parent"
-                android:layout_height="75dp"
+                android:layout_height="95dp"
                 android:layout_marginTop="-10dp"
                 android:background="@color/transparent"
                 android:contentDescription="bottom sheet drag button" />
