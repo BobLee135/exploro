@@ -1,9 +1,14 @@
 package com.example.exploro.controllers;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +17,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.exploro.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class SelectDestinations extends Fragment {
 
@@ -34,8 +48,10 @@ public class SelectDestinations extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.select_fragment, container, false);
+        //MapsActivityController mac = new MapsActivityController();
 
+        View view = inflater.inflate(R.layout.select_fragment, container, false);
+        //inflater.inflate(R.layout.fragment_mini_map, container, false);
 
 
         // Create new destination text field
@@ -53,7 +69,27 @@ public class SelectDestinations extends Fragment {
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dpToPx(320), dpToPx(50));
                 params.setMargins(dpToPx(20), 0, 0, 0);
                 newDst.setLayoutParams(params);
+/*
+                newDst.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        // Send a request for the location
+
+                        //mac.sendRequest("");
+
+                        LatLng sydney = new LatLng(-34, 151);
+                        MarkerOptions markerOptions = new MarkerOptions().position(sydney).title("DON'T FORGET TO ADD NAME HERE");
+                        MiniMapFragment.minimap.addMarker(markerOptions);
+                        MiniMapFragment.minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 0));
+                    }
+                });
+*/
                 // Add the new input field to the layout
                 LinearLayout myLayout = (LinearLayout)view.findViewById(R.id.createRoute);
                 myLayout.addView(newDst);

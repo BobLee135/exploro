@@ -2,11 +2,9 @@ package com.example.exploro.controllers;
 
 import androidx.fragment.app.FragmentActivity;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.util.Log;
 
 import com.example.exploro.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -15,29 +13,19 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.exploro.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.DirectionsApi;
-import com.google.maps.DirectionsApiRequest;
 import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MapsActivityController extends FragmentActivity implements OnMapReadyCallback {
@@ -59,7 +47,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.miniMap);
         mapFragment.getMapAsync(this);
     }
 
@@ -80,18 +68,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         StrictMode.setThreadPolicy(policy);
 
         // Send a request to google directions api for the route
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        Request request = new Request.Builder()
-                .url(this.URL)
-                .get()
-                .build();
-        Response response = null;
-        try {
-            response = client.newCall(request).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Response response = sendRequest(this.URL);
 
         // Display the route on the map
         double start_lat = 0.0;
@@ -144,6 +121,22 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
             }
         }
         this.URL += "&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
+    }
+
+    public Response sendRequest(String url) {
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        Response response = null;
+        try {
+            response = client.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 
 }

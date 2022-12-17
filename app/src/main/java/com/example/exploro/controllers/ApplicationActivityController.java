@@ -58,7 +58,7 @@ public class ApplicationActivityController extends AppCompatActivity {
                 findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.INVISIBLE);
                 findViewById(R.id.createOwnRouteBtn).setVisibility(View.INVISIBLE);
                 findViewById(R.id.logo2).setVisibility(View.INVISIBLE);
-                findViewById(R.id.button).setVisibility(View.INVISIBLE);
+                findViewById(R.id.sideNavBarToggle).setVisibility(View.INVISIBLE);
 
                 SelectDestinations selectDst = new SelectDestinations();
                 findViewById(R.id.selectFragmentContainer).setVisibility(View.VISIBLE);

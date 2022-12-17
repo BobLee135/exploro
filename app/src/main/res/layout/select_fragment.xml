@@ -7,10 +7,26 @@
     android:background="@color/red_shade_2">
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent" >
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragmentContainerView"
+            android:name="com.example.exploro.controllers.MiniMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_mini_map" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/createRoute"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp">
 
     </LinearLayout>
 
