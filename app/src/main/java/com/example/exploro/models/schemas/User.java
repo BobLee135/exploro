@@ -6,13 +6,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 
 public class User {
-    public String id, name, password, email, phoneNumber;
+    public String id, name, username, password, email, phoneNumber;
     public int experience;
 
-    public User(String name, String password, String email, String phoneNumber){
+    public User() {}
+
+    public User(String name, String email, String username, String password, String phoneNumber){
         this.name = name;
-        this.password = password;
         this.email = email;
+        this.username = username;
+        this.password = password;
         this.phoneNumber = phoneNumber;
     }
     public User(String name, String password){
@@ -30,6 +33,10 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
+
+    public String getUsername() { return username; }
+
+    public void setUsername (String username) { this.username = username; }
 
     public String getPassword() {
         return password;
