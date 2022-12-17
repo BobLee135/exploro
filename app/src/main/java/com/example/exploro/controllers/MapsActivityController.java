@@ -5,6 +5,7 @@ import androidx.fragment.app.FragmentActivity;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 
 import com.example.exploro.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -64,9 +65,6 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
         // Send a request to google directions api for the route
         Response response = sendRequest(this.URL);
 
@@ -108,6 +106,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     }
 
 // "https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
+// "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=seattle&inputtype=textquery&fields=formatted_address%2Cgeometry&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
 
     public void buildRoute(String[] destinations) {
         this.URL = "https://maps.googleapis.com/maps/api/directions/json?origin=";
@@ -123,7 +122,17 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         this.URL += "&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
     }
 
+    public String buildPlace(String place) {
+        String query = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=";
+        query += place;
+        query += "&inputtype=textquery&fields=formatted_address%2Cgeometry&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
+        return query;
+    }
+
     public Response sendRequest(String url) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         Request request = new Request.Builder()
