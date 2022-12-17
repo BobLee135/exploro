@@ -10,12 +10,15 @@ import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,6 +34,13 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Response;
 
 public class SelectDestinations extends Fragment {
 
@@ -48,10 +58,9 @@ public class SelectDestinations extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        //MapsActivityController mac = new MapsActivityController();
+        MapsActivityController mac = new MapsActivityController();
 
         View view = inflater.inflate(R.layout.select_fragment, container, false);
-        //inflater.inflate(R.layout.fragment_mini_map, container, false);
 
 
         // Create new destination text field
@@ -69,27 +78,43 @@ public class SelectDestinations extends Fragment {
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dpToPx(320), dpToPx(50));
                 params.setMargins(dpToPx(20), 0, 0, 0);
                 newDst.setLayoutParams(params);
-/*
-                newDst.addTextChangedListener(new TextWatcher() {
+
+                // When enter is pressed or the user leaves the text input we add a market of the location on the map
+                newDst.setOnEditorActionListener(new EditText.OnEditorActionListener() {
                     @Override
-                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+                    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                        if (i == EditorInfo.IME_ACTION_DONE || i == EditorInfo.IME_ACTION_NEXT
+                                || i == EditorInfo.IME_ACTION_GO || keyEvent.getAction() == KeyEvent.ACTION_DOWN
+                                && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
 
-                    @Override
-                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+                            // Send a request for the location
+                            Response response = mac.sendRequest(mac.buildPlace(textView.getText().toString()));
+                            double lat = 0.0;
+                            double lng = 0.0;
+                            String name = "Location not found";
+                            try {
+                                JSONObject jsonResponse = new JSONObject(response.body().string());
+                                lat = jsonResponse.getJSONArray("candidates").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
+                                lng = jsonResponse.getJSONArray("candidates").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
+                                name = jsonResponse.getJSONArray("candidates").getJSONObject(0).getString("formatted_address");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
 
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        // Send a request for the location
+                            // Pin the location on the map
+                            LatLng search = new LatLng(lat, lng);
+                            MarkerOptions markerOptions = new MarkerOptions().position(search).title(name);
+                            MiniMapFragment.minimap.addMarker(markerOptions);
+                            MiniMapFragment.minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(search, 10));
 
-                        //mac.sendRequest("");
-
-                        LatLng sydney = new LatLng(-34, 151);
-                        MarkerOptions markerOptions = new MarkerOptions().position(sydney).title("DON'T FORGET TO ADD NAME HERE");
-                        MiniMapFragment.minimap.addMarker(markerOptions);
-                        MiniMapFragment.minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 0));
+                            return true;
+                        }
+                        return false;
                     }
                 });
-*/
+
                 // Add the new input field to the layout
                 LinearLayout myLayout = (LinearLayout)view.findViewById(R.id.createRoute);
                 myLayout.addView(newDst);
