@@ -55,8 +55,14 @@ public class ApplicationActivityController extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(getApplicationContext(), MapsActivityController.class);
-                startActivity(intent);
+                findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.INVISIBLE);
+                findViewById(R.id.createOwnRouteBtn).setVisibility(View.INVISIBLE);
+                findViewById(R.id.logo2).setVisibility(View.INVISIBLE);
+                findViewById(R.id.button).setVisibility(View.INVISIBLE);
+
+                SelectDestinations selectDst = new SelectDestinations();
+                findViewById(R.id.selectFragmentContainer).setVisibility(View.VISIBLE);
+
             }
         });
     }

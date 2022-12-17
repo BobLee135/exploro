@@ -27,6 +27,18 @@
             app:layout_constraintTop_toTopOf="parent"
             android:src="@drawable/logo_svg" />
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/selectFragmentContainer"
+        android:name="com.example.exploro.controllers.SelectDestinations"
+        android:layout_width="413dp"
+        android:layout_height="733dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/select_fragment" />
+
         <Button
             android:id="@+id/createOwnRouteBtn"
             android:layout_width="320dp"
@@ -82,13 +94,15 @@
             tools:ignore="SpeakableTextPresentCheck" />
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/createOwnRouteBtn">
+            app:layout_constraintTop_toBottomOf="@+id/createOwnRouteBtn"
+        app:layout_constraintVertical_bias="1.0">
 
 
             <FrameLayout

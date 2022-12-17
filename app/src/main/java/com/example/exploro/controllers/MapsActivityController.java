@@ -13,6 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.exploro.databinding.ActivityMapsBinding;
@@ -49,6 +50,10 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Build the url with all destinations
+        String[] dsts = getIntent().getExtras().getStringArray("destinationList");
+        buildRoute(dsts);
+
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -56,9 +61,6 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        // Build the url with all destinations
-
     }
 
     /**
@@ -80,10 +82,8 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         // Send a request to google directions api for the route
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
-        MediaType mediaType = MediaType.parse("text/plain");
-        RequestBody body = RequestBody.create("", mediaType);
         Request request = new Request.Builder()
-                .url("https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs")
+                .url(this.URL)
                 .get()
                 .build();
         Response response = null;
@@ -92,7 +92,10 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         // Display the route on the map
+        double start_lat = 0.0;
+        double start_lng = 0.0;
         try {
             JSONObject jsonResponse = new JSONObject(response.body().string());
             JSONArray routesArray = jsonResponse.getJSONArray("routes");
@@ -100,17 +103,47 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
             JSONObject overview_polyline = route.getJSONObject("overview_polyline");
             String encodedString = overview_polyline.getString("points");
 
+            start_lat = route.getJSONArray("legs").getJSONObject(0).getJSONObject("start_location").getDouble("lat");
+            start_lng = route.getJSONArray("legs").getJSONObject(0).getJSONObject("start_location").getDouble("lng");
+
             List<LatLng> list = PolyUtil.decode(encodedString);
 
             PolylineOptions lineOptions = new PolylineOptions();
             lineOptions.addAll(list);
             lineOptions.width(10);
-            lineOptions.color(Color.RED);
+            lineOptions.color(Color.rgb(241, 131, 131));
             mMap.addPolyline(lineOptions);
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // Move the focus of the map to the first destination of the route
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(new LatLng(start_lat, start_lng))
+                .zoom(10) // zoom level between 0-21 where 21 is max zoom
+                .tilt(45) // this is weird (0 (horizontal) - 90 (vertical))
+                .build();
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(start_lat, start_lng), 45));
+
     }
+
+// "https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
+
+    public void buildRoute(String[] destinations) {
+        this.URL = "https://maps.googleapis.com/maps/api/directions/json?origin=";
+        this.URL += destinations[0];
+        this.URL += "&destination=" + destinations[destinations.length-1];
+        if (destinations.length > 2) {
+            this.URL += "&waypoints=";
+            for (int i = 1; i < destinations.length-1; i++) {
+                this.URL += "via:" + destinations[i];
+                if (i != destinations.length-2) this.URL += "|";
+            }
+        }
+        this.URL += "&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
+    }
+
 }
