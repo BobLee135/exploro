@@ -27,4 +27,7 @@
     <string name="create_route">Create my own route</string>
     <string name="locations_fragment_title">Top Locations</string>
     <string name="view_all">View all</string>
+
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
 </resources>
