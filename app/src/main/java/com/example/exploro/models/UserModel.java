@@ -5,11 +5,13 @@ import android.util.Log;
 
 import com.example.exploro.models.schemas.Trips;
 import com.example.exploro.models.schemas.User;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DataSnapshot;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.firebase.database.ValueEventListener;
 
 import androidx.annotation.NonNull;
 
@@ -124,6 +126,7 @@ public class UserModel {
      * @return found users in ResultStatus
      */
     public void findEmailInUsers(String email, final ResultStatus result) {
+
         db.child("users").child(email).get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
             List<User> users = new ArrayList<>();
             @Override
@@ -139,6 +142,43 @@ public class UserModel {
             }
         });
     }
+    public void addNewFriend(String username, String friendUsername) {
+        User friend = new User();
+        friend.username = friendUsername;
+        User user = new User();
+        user.username = username;
+        db.child("users").child(username).child("friends").setValue(friend);
+        db.child("users").child(friendUsername).child("friends").setValue(user);
 
+    }
+    public void changeEmail(String username, String newEmail) {
+        db.child("users").child(username).child("email").setValue(newEmail);
+    }
+    public void changePassword(String username, String password) {
+        password = Base64.getEncoder().encodeToString(password.getBytes(StandardCharsets.UTF_8));
+        db.child("users").child(username).child("password").setValue(password);
+    }
+    public void changeUsername(String username, String newUsername) {
+        db.child("users").child(username).child("password").setValue(newUsername);
+    }
+    public void addUserExperience(String username, int experience) {
+        db.child("users").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                user.experience += experience;
+                db.child("users").child("experience").setValue(user.experience);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                System.out.println("Could not get thang");
+
+            }
+        });
+    }
+    public void addTrip(String username, String city, String country, String place){
+        Trips trips = new Trips(city, country, place);
+        db.child("users").child(username).child("trips").push().setValue(trips);
+    }
 
 }
