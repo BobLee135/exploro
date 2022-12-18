@@ -2,7 +2,16 @@ package com.example.exploro.controllers;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -11,12 +20,21 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.exploro.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class MiniMapFragment extends Fragment {
 
@@ -36,6 +54,19 @@ public class MiniMapFragment extends Fragment {
         @Override
         public void onMapReady(GoogleMap googleMap) {
             minimap = googleMap;
+
+
+            if (MyLocationListener.currentLocation != null) {
+                // add users location
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(MyLocationListener.currentLocation)
+                        .title("You")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                googleMap.addMarker(markerOptions);
+                // move the camera
+                minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(MyLocationListener.currentLocation, 15));
+            }
+
         }
     };
 
@@ -56,4 +87,5 @@ public class MiniMapFragment extends Fragment {
             mapFragment.getMapAsync(callback);
         }
     }
+
 }
