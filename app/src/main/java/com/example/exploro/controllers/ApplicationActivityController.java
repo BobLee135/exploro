@@ -25,6 +25,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.bumptech.glide.Glide;
 import com.example.exploro.BuildConfig;
@@ -32,6 +34,7 @@ import com.example.exploro.LocationsBottomSheetBehavior;
 import com.example.exploro.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -75,6 +78,29 @@ public class ApplicationActivityController extends AppCompatActivity {
                     drawerLayout.openDrawer(GravityCompat.START);
             }
         });
+        NavigationView nw = findViewById(R.id.nav_view);
+        nw.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
+
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if(item.getItemId() == R.id.nav_leaderboards) {
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    LeaderboardFragment leaderboardFragment = new LeaderboardFragment();
+                    fragmentTransaction.replace(R.id.selectFragmentContainer, leaderboardFragment);
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    findViewById(R.id.selectFragmentContainer).setVisibility(View.VISIBLE);
+                    findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.createOwnRouteBtn).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.logo2).setVisibility(View.INVISIBLE);
+                    fragmentTransaction.commit();
+
+                    return true;
+                }
+                return false;
+            }
+        });
+
 
 
         Button myButton = (Button) findViewById(R.id.createOwnRouteBtn);
