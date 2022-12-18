@@ -19,6 +19,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class UserModel {
     private DatabaseReference db;
@@ -142,13 +143,66 @@ public class UserModel {
             }
         });
     }
+    public void getAllUserObjects(final ResultStatus result) {
+
+        db.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    List<User> users = new ArrayList<>();
+                    for (DataSnapshot children : snapshot.getChildren()) {
+                        User user = children.getValue(User.class);
+                        users.add(user);
+                    }
+                    result.resultLoaded(users);
+                    return;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("firebase", "Error getting data", error.toException());
+                return;
+
+            }
+        });
+    }
+    public void getFriendsUserObjects(String username, final ResultStatus result) {
+
+        db.child("users").child(username).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    List<User> users = new ArrayList<>();
+                    for (DataSnapshot children : snapshot.getChildren()) {
+                        User user = children.getValue(User.class);
+                        users.add(user);
+                    }
+                    result.resultLoaded(users);
+                    return;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("firebase", "Error getting data", error.toException());
+                return;
+
+            }
+        });
+    }
     public void addNewFriend(String username, String friendUsername) {
         User friend = new User();
         friend.username = friendUsername;
         User user = new User();
         user.username = username;
-        db.child("users").child(username).child("friends").setValue(friend);
-        db.child("users").child(friendUsername).child("friends").setValue(user);
+        db.child("users").child(username).child("friends").child(friendUsername).setValue(friend);
+        db.child("users").child(friendUsername).child("friends").child(username).setValue(user);
+
+    }
+    public void deleteFriend(String username, String friendUsername) {
+        db.child("users").child(username).child("friends").child(friendUsername).removeValue();
+        db.child("users").child(friendUsername).child("friends").child(username).removeValue();
 
     }
     public void changeEmail(String username, String newEmail) {
@@ -162,16 +216,19 @@ public class UserModel {
         db.child("users").child(username).child("password").setValue(newUsername);
     }
     public void addUserExperience(String username, int experience) {
+        final CountDownLatch latch = new CountDownLatch(1);
         db.child("users").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
                 user.experience += experience;
-                db.child("users").child("experience").setValue(user.experience);
+                db.child("users").child(user.username).setValue(user);
+                latch.countDown();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 System.out.println("Could not get thang");
+                latch.countDown();
 
             }
         });
@@ -180,5 +237,6 @@ public class UserModel {
         Trips trips = new Trips(city, country, place);
         db.child("users").child(username).child("trips").push().setValue(trips);
     }
+
 
 }
