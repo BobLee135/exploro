@@ -4,10 +4,12 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 
+import com.example.exploro.BuildConfig;
 import com.example.exploro.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -143,7 +145,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
                 if (i != destinations.length-2) this.URL += "|";
             }
         }
-        this.URL += "&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
+        this.URL += "&key=" + BuildConfig.MAPS_API_KEY;
     }
 
 }

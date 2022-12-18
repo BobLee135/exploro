@@ -155,7 +155,7 @@
                     <androidx.cardview.widget.CardView
                         android:id="@+id/locationCategoryCard0"
                         android:layout_width="match_parent"
-                        android:layout_height="185dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         app:cardBackgroundColor="#00FFFFFF"
                         app:cardCornerRadius="0dp"
@@ -187,104 +187,6 @@
                                 android:textSize="18sp"
                                 app:layout_constraintBottom_toBottomOf="@+id/locationsCategoryText0"
                                 app:layout_constraintEnd_toEndOf="parent" />
-
-                            <androidx.constraintlayout.widget.ConstraintLayout
-                                android:id="@+id/locationView0"
-                                android:layout_width="0dp"
-                                android:layout_height="0dp"
-                                android:layout_marginTop="10dp"
-                                android:layout_marginEnd="180dp"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/locationsCategoryText0">
-
-                                <ImageView
-                                    android:id="@+id/locationViewImage0"
-                                    android:layout_width="0dp"
-                                    android:layout_height="0dp"
-                                    android:layout_marginBottom="40dp"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    android:src="@drawable/user" />
-
-                                <TextView
-                                    android:id="@+id/locationViewTitle0"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:text="Antonio's"
-                                    android:textColor="@color/black"
-                                    android:textSize="16sp"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/locationViewImage0" />
-
-                                <RatingBar
-                                    android:id="@+id/locationViewRating0"
-                                    style="@android:style/Widget.DeviceDefault.Light.RatingBar.Small"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:isIndicator="true"
-                                    android:numStars="5"
-                                    android:progressTint="#FFEB3B"
-                                    android:rating="4.5"
-                                    android:secondaryProgressTint="#FFC107"
-                                    android:stepSize="0.1"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/locationViewTitle0" />
-                            </androidx.constraintlayout.widget.ConstraintLayout>
-
-                            <androidx.constraintlayout.widget.ConstraintLayout
-                                android:id="@+id/locationView1"
-                                android:layout_width="0dp"
-                                android:layout_height="0dp"
-                                android:layout_marginStart="180dp"
-                                android:layout_marginTop="10dp"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toBottomOf="@+id/locationsCategoryText0">
-
-                                <ImageView
-                                    android:id="@+id/locationViewImage1"
-                                    android:layout_width="0dp"
-                                    android:layout_height="0dp"
-                                    android:layout_marginBottom="40dp"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    android:src="@drawable/user" />
-
-                                <TextView
-                                    android:id="@+id/locationViewTitle1"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:text="Antonio's"
-                                    android:textColor="@color/black"
-                                    android:textSize="16sp"
-                                    app:layout_constraintEnd_toEndOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/locationViewImage1" />
-
-                                <RatingBar
-                                    android:id="@+id/locationViewRating1"
-                                    style="@android:style/Widget.DeviceDefault.Light.RatingBar.Small"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:isIndicator="true"
-                                    android:numStars="5"
-                                    android:progressTint="#FFEB3B"
-                                    android:rating="4.5"
-                                    android:secondaryProgressTint="#FFC107"
-                                    android:stepSize="0.1"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/locationViewTitle1" />
-                            </androidx.constraintlayout.widget.ConstraintLayout>
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
