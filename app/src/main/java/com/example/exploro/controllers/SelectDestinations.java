@@ -107,7 +107,7 @@ public class SelectDestinations extends Fragment {
                             LatLng search = new LatLng(lat, lng);
                             MarkerOptions markerOptions = new MarkerOptions().position(search).title(name);
                             MiniMapFragment.minimap.addMarker(markerOptions);
-                            MiniMapFragment.minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(search, 10));
+                            MiniMapFragment.minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(search, 12));
 
                             return true;
                         }
