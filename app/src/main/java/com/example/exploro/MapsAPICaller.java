@@ -1,5 +1,9 @@
 package com.example.exploro;
 
+import android.graphics.Bitmap;
+import android.util.DisplayMetrics;
+import android.util.Log;
+
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -13,6 +17,7 @@ import com.google.maps.model.LatLng;
 
 import java.io.IOException;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -145,13 +150,14 @@ public class MapsAPICaller {
      * @param limit - The maximum limit of places to retrieve from query
      * @return - Found places matching parameters
      */
-    public JSONArray getPlacesFromQuery(String query, LatLng location, boolean currentlyOpen, int radius, PlaceTypes type, int limit) {
+    public JSONArray getPlacesFromQuery(String query, boolean currentlyOpen, int radius, PlaceTypes type, int limit) {
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
         url += "query=" + query;
-        url += "&location=" + location;
+        //url += "&location=" + location;
         url += "&opennow=" + currentlyOpen;
         url += "&radius=" + radius;
         url += "&type=";
+        url += "&key=" + BuildConfig.MAPS_API_KEY;
 
         OkHttpClient requestClient = new OkHttpClient().newBuilder().build();
         Request request = new Request.Builder().url(url).get().build();
@@ -161,11 +167,16 @@ public class MapsAPICaller {
             JSONObject responseBody = new JSONObject(response.body().string());
             String status = responseBody.getString("status");
 
-            if (status != "OK")
+            if (!status.equals("OK"))
                 return null;
 
             JSONArray results = responseBody.getJSONArray("results");
             JSONArray returnArray = new JSONArray();
+
+            if (results.length() <= 0)
+                return null;
+
+            // Sort Results based on rating
             List<JSONObject> resultList = new ArrayList<JSONObject>();
             for (int i = 0; i < results.length(); i++)
                 resultList.add(results.getJSONObject(i));
@@ -176,8 +187,8 @@ public class MapsAPICaller {
                     String valA = new String();
                     String valB = new String();
                     try {
-                        valA = a.getString("rating");
-                        valB = b.getString("rating");
+                        valA = valA + (a.getDouble("rating") * a.getInt("user_ratings_total"));
+                        valB = valB + (b.getDouble("rating") * b.getInt("user_ratings_total"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -185,9 +196,10 @@ public class MapsAPICaller {
                 }
             });
 
+            Collections.reverse(resultList);
+            limit = (limit < resultList.size()) ? limit : resultList.size();
             for (int i = 0; i < limit; i++)
                 returnArray.put(resultList.get(i));
-
 
             return returnArray;
         } catch (IOException e) {
@@ -214,6 +226,7 @@ public class MapsAPICaller {
         url += "&location=" + location;
         url += "&radius=" + radius;
         url += "&type=";
+        url += "&key=" + BuildConfig.MAPS_API_KEY;
 
         OkHttpClient requestClient = new OkHttpClient().newBuilder().build();
         Request request = new Request.Builder().url(url).get().build();
@@ -228,6 +241,8 @@ public class MapsAPICaller {
 
             JSONArray results = responseBody.getJSONArray("results");
             JSONArray returnArray = new JSONArray();
+
+            // Sort Results based on rating
             List<JSONObject> resultList = new ArrayList<JSONObject>();
             for (int i = 0; i < results.length(); i++)
                 resultList.add(results.getJSONObject(i));
@@ -238,8 +253,8 @@ public class MapsAPICaller {
                     String valA = new String();
                     String valB = new String();
                     try {
-                        valA = a.getString("rating");
-                        valB = b.getString("rating");
+                        valA = valA + (a.getDouble("rating") * a.getInt("user_ratings_total"));
+                        valB = valB + (b.getDouble("rating") * b.getInt("user_ratings_total"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -247,8 +262,10 @@ public class MapsAPICaller {
                 }
             });
 
+            Collections.reverse(resultList);
             for (int i = 0; i < limit; i++)
                 returnArray.put(resultList.get(i));
+
 
 
             return returnArray;
@@ -277,6 +294,7 @@ public class MapsAPICaller {
         url += "&opennow=" + currentlyOpen;
         url += "&radius=" + radius;
         url += "&type=";
+        url += "&key=" + BuildConfig.MAPS_API_KEY;
 
         OkHttpClient requestClient = new OkHttpClient().newBuilder().build();
         Request request = new Request.Builder().url(url).get().build();
@@ -291,6 +309,8 @@ public class MapsAPICaller {
 
             JSONArray results = responseBody.getJSONArray("results");
             JSONArray returnArray = new JSONArray();
+
+            // Sort Results based on rating
             List<JSONObject> resultList = new ArrayList<JSONObject>();
             for (int i = 0; i < results.length(); i++)
                 resultList.add(results.getJSONObject(i));
@@ -301,8 +321,8 @@ public class MapsAPICaller {
                     String valA = new String();
                     String valB = new String();
                     try {
-                        valA = a.getString("rating");
-                        valB = b.getString("rating");
+                        valA = valA + (a.getDouble("rating") * a.getInt("user_ratings_total"));
+                        valB = valB + (b.getDouble("rating") * b.getInt("user_ratings_total"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -310,6 +330,7 @@ public class MapsAPICaller {
                 }
             });
 
+            Collections.reverse(resultList);
             for (int i = 0; i < resultList.size(); i++)
                 returnArray.put(resultList.get(i));
 
@@ -338,6 +359,7 @@ public class MapsAPICaller {
         url += "&location=" + location;
         url += "&radius=" + radius;
         url += "&type=";
+        url += "&key=" + BuildConfig.MAPS_API_KEY;
 
         OkHttpClient requestClient = new OkHttpClient().newBuilder().build();
         Request request = new Request.Builder().url(url).get().build();
@@ -352,6 +374,8 @@ public class MapsAPICaller {
 
             JSONArray results = responseBody.getJSONArray("results");
             JSONArray returnArray = new JSONArray();
+
+            // Sort Results based on rating
             List<JSONObject> resultList = new ArrayList<JSONObject>();
             for (int i = 0; i < results.length(); i++)
                 resultList.add(results.getJSONObject(i));
@@ -362,8 +386,8 @@ public class MapsAPICaller {
                     String valA = new String();
                     String valB = new String();
                     try {
-                        valA = a.getString("rating");
-                        valB = b.getString("rating");
+                        valA = valA + (a.getDouble("rating") * a.getInt("user_ratings_total"));
+                        valB = valB + (b.getDouble("rating") * b.getInt("user_ratings_total"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -371,8 +395,10 @@ public class MapsAPICaller {
                 }
             });
 
+            Collections.reverse(resultList);
             for (int i = 0; i < resultList.size(); i++)
                 returnArray.put(resultList.get(i));
+
 
 
             return returnArray;
@@ -394,18 +420,25 @@ public class MapsAPICaller {
      * @param photoRef - Photo reference key obtained from TextSearch API call
      * @return - Returns image url as a String
      */
-    public String getImageURLFromPhotoReference(String photoRef) {
+    public byte[] getImageURLFromPhotoReference(String photoRef, int maxWidth, int maxHeight) {
         String imageUrlAPI = "https://maps.googleapis.com/maps/api/place/photo?";
-        imageUrlAPI += photoRef;
+        imageUrlAPI += "photo_reference=" + photoRef;
+        imageUrlAPI += "&maxwidth=" + maxWidth;
+        imageUrlAPI += "&maxheight=" + maxHeight;
         imageUrlAPI += "&key=" + BuildConfig.MAPS_API_KEY;
 
         OkHttpClient requestClient = new OkHttpClient().newBuilder().build();
-        Request request = new Request.Builder().url(imageUrlAPI).get().build();
+        Request request = new Request.Builder()
+                .url(imageUrlAPI)
+                .addHeader("Accept", "application/vnd.collection+json")
+                .get()
+                .build();
         Response response = null;
 
         try {
             response = requestClient.newCall(request).execute();
-            return response.toString();
+            byte[] result = response.body().bytes();
+            return result;
         } catch (IOException e) {
             e.printStackTrace();
         }
