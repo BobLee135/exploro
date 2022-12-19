@@ -39,6 +39,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     private String URL = "";
+    private String[] dsts;
 
     private static Marker userLocation;
 
@@ -47,7 +48,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         super.onCreate(savedInstanceState);
 
         // Build the url with all destinations
-        String[] dsts = getIntent().getExtras().getStringArray("destinationList");
+        dsts = getIntent().getExtras().getStringArray("destinationList");
         buildRoute(dsts);
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
@@ -102,6 +103,27 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         }
 
         if (MyLocationListener.currentLocation != null) {
+            // add markers for each place on the route to visit
+            if (dsts != null) {
+                for (int i = 1; i < dsts.length; i++) {
+                    Response res = sendRequest(buildPlace(dsts[i]));
+                    double lat = 0.0;
+                    double lng = 0.0;
+                    String name = "";
+                    try {
+                        JSONObject jsonResponse = new JSONObject(res.body().string());
+                        lat = jsonResponse.getJSONArray("candidates").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
+                        lng = jsonResponse.getJSONArray("candidates").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
+                        name = jsonResponse.getJSONArray("candidates").getJSONObject(0).getString("formatted_address");
+                        MarkerOptions place = new MarkerOptions().position(new LatLng(lat, lng)).title(name);
+                        googleMap.addMarker(place);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
             // add users location
             userLocation = googleMap.addMarker(MyLocationListener.userLocationMarker);
             // move the camera
@@ -129,7 +151,10 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     public String buildPlace(String place) {
         String query = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=";
         query += place;
-        query += "&inputtype=textquery&fields=formatted_address%2Cgeometry&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
+        query += "&inputtype=textquery&locationbias=circle:";
+        query += 1000; // radius of place search
+        query += "@" + MyLocationListener.currentLocation.latitude + "," + MyLocationListener.currentLocation.longitude;
+        query += "&fields=formatted_address%2Cgeometry&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
         return query;
     }
 
