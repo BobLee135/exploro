@@ -3,6 +3,8 @@ package com.example.exploro.controllers;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -44,9 +46,14 @@ import okhttp3.Response;
 
 public class SelectDestinations extends Fragment {
 
+    private int currentNumberOfDestinations;
+    private int maxNumberOfDestinations = 10; // (no more than 24) google maps api allows for origin + 23 waypoints + destination in a route
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        currentNumberOfDestinations = 0;
     }
 
     public static SelectDestinations newInstance() {
@@ -62,11 +69,20 @@ public class SelectDestinations extends Fragment {
 
         View view = inflater.inflate(R.layout.select_fragment, container, false);
 
-
         // Create new destination text field
         Button add = (Button) view.findViewById(R.id.addDestination);
         add.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                // Not infinite number of destinations in a route
+                if (currentNumberOfDestinations >= maxNumberOfDestinations) return;
+                currentNumberOfDestinations++;
+
+                if (currentNumberOfDestinations == maxNumberOfDestinations) {
+                    add.setEnabled(false);
+                    add.getBackground().setColorFilter(Color.parseColor("#C0C0C0"), PorterDuff.Mode.MULTIPLY);
+                    add.setTextColor(Color.parseColor("#808080"));
+                }
+
                 // Create a new input field
                 EditText newDst = new EditText(getActivity());
                 newDst.setHint("Route Destination");
@@ -76,7 +92,7 @@ public class SelectDestinations extends Fragment {
                 newDst.setSingleLine(true);
                 newDst.setPadding(dpToPx(10), 0, 0, 0);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dpToPx(320), dpToPx(50));
-                params.setMargins(dpToPx(20), 0, 0, 0);
+                params.setMargins(dpToPx(20), 0, 0, dpToPx(4));
                 newDst.setLayoutParams(params);
 
                 // When enter is pressed or the user leaves the text input we add a market of the location on the map
