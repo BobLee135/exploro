@@ -14,9 +14,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.example.exploro.databinding.ActivityMapsBinding;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.maps.android.PolyUtil;
 
@@ -36,6 +39,8 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     private String URL = "";
+
+    private static Marker userLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,15 +101,12 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
             e.printStackTrace();
         }
 
-        // Move the focus of the map to the first destination of the route
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(start_lat, start_lng))
-                .zoom(10) // zoom level between 0-21 where 21 is max zoom
-                .tilt(45) // this is weird (0 (horizontal) - 90 (vertical))
-                .build();
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(start_lat, start_lng), 45));
-
+        if (MyLocationListener.currentLocation != null) {
+            // add users location
+            userLocation = googleMap.addMarker(MyLocationListener.userLocationMarker);
+            // move the camera
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MyLocationListener.currentLocation, 15));
+        }
     }
 
 // "https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
@@ -148,6 +150,13 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
             e.printStackTrace();
         }
         return response;
+    }
+
+    // Updates the position of the marker
+    public static void updateUserLocation(LatLng newPos) {
+        if (userLocation != null) {
+            userLocation.setPosition(newPos);
+        }
     }
 
 }

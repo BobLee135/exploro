@@ -107,7 +107,7 @@ public class SelectDestinations extends Fragment {
                             LatLng search = new LatLng(lat, lng);
                             MarkerOptions markerOptions = new MarkerOptions().position(search).title(name);
                             MiniMapFragment.minimap.addMarker(markerOptions);
-                            MiniMapFragment.minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(search, 12));
+                            MiniMapFragment.minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(search, 15));
 
                             return true;
                         }
@@ -128,15 +128,19 @@ public class SelectDestinations extends Fragment {
             public void onClick(View v) {
                 // Retrieve all destinations
                 ViewGroup layout = (ViewGroup) view.findViewById(R.id.createRoute);
+
+                String[] destinationList = new String[layout.getChildCount()+1];
+                // Users location should be the origin of the route
+                destinationList[0] = MyLocationListener.currentAddress;
                 // Loop through each of the views in the layout
-                String[] destinationList = new String[layout.getChildCount()];
                 for (int i = 0; i < layout.getChildCount(); i++) {
                     View view = layout.getChildAt(i);
 
                     if (view instanceof EditText) {
-                        destinationList[i] = ((EditText) view).getText().toString();
+                        destinationList[i+1] = ((EditText) view).getText().toString();
                     }
                 }
+
                 // Add all destinations as a bundle and send to the new activity
                 Bundle bundle = new Bundle();
                 bundle.putStringArray("destinationList", destinationList);
