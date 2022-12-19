@@ -29,6 +29,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -39,6 +40,8 @@ import java.util.Locale;
 public class MiniMapFragment extends Fragment {
 
     public static GoogleMap minimap;
+
+    private static Marker userLocation;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -55,18 +58,13 @@ public class MiniMapFragment extends Fragment {
         public void onMapReady(GoogleMap googleMap) {
             minimap = googleMap;
 
-
+            // IF THE USERS LOCATION IS NOT PINNED ON THE MAP, WE MIGHT LOAD THE MAP BEFORE THEIR LOCATION
             if (MyLocationListener.currentLocation != null) {
                 // add users location
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(MyLocationListener.currentLocation)
-                        .title("You")
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
-                googleMap.addMarker(markerOptions);
+                userLocation = googleMap.addMarker(MyLocationListener.userLocationMarker);
                 // move the camera
                 minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(MyLocationListener.currentLocation, 15));
             }
-
         }
     };
 
@@ -81,10 +79,16 @@ public class MiniMapFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.miniMap);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.miniMap);
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
+        }
+    }
+
+    // Updates the position of the marker
+    public static void updateUserLocation(LatLng newPos) {
+        if (userLocation != null) {
+            userLocation.setPosition(newPos);
         }
     }
 
