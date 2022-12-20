@@ -172,20 +172,25 @@ public class UserModel {
         db.child("users").child(username).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<User> users = new ArrayList<>();
                 if (snapshot.exists()) {
-                    List<User> users = new ArrayList<>();
                     for (DataSnapshot children : snapshot.getChildren()) {
                         User user = children.getValue(User.class);
                         users.add(user);
                     }
                     result.resultLoaded(users);
                     return;
+                } else{
+                    result.resultLoaded(users);
+                    return;
+
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("firebase", "Error getting data", error.toException());
+                System.out.println("HEHEHEHEHEHEH");
                 return;
 
             }
