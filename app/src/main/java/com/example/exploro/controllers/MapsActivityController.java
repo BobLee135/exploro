@@ -1,13 +1,22 @@
 package com.example.exploro.controllers;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.exploro.BuildConfig;
 import com.example.exploro.R;
@@ -15,31 +24,24 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.exploro.databinding.ActivityMapsBinding;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.maps.DirectionsApi;
-import com.google.maps.DirectionsApiRequest;
 import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class MapsActivityController extends FragmentActivity implements OnMapReadyCallback {
@@ -47,13 +49,16 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
     private String URL = "";
+    private String[] dsts;
+
+    private static Marker userLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // Build the url with all destinations
-        String[] dsts = getIntent().getExtras().getStringArray("destinationList");
+        dsts = getIntent().getExtras().getStringArray("destinationList");
         buildRoute(dsts);
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
@@ -61,9 +66,28 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.miniMap);
         mapFragment.getMapAsync(this);
+
+
+        Button finish = (Button) findViewById(R.id.finishRoute);
+        finish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                /*
+                        INSERT ADD XP TO USER CODE HERE
+                 */
+
+
+                // Jump back to main page
+                Activity currentActivity = getSupportFragmentManager().findFragmentById(R.id.miniMap).getActivity();
+                Intent intent = new Intent(currentActivity, ApplicationActivityController.class);
+                startActivity(intent);
+            }
+        });
     }
+
 
     /**
      * Manipulates the map once available.
@@ -78,22 +102,8 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
         // Send a request to google directions api for the route
-        OkHttpClient client = new OkHttpClient().newBuilder()
-                .build();
-        Request request = new Request.Builder()
-                .url(this.URL)
-                .get()
-                .build();
-        Response response = null;
-        try {
-            response = client.newCall(request).execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Response response = sendRequest(this.URL);
 
         // Display the route on the map
         double start_lat = 0.0;
@@ -121,18 +131,37 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
             e.printStackTrace();
         }
 
-        // Move the focus of the map to the first destination of the route
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(start_lat, start_lng))
-                .zoom(10) // zoom level between 0-21 where 21 is max zoom
-                .tilt(45) // this is weird (0 (horizontal) - 90 (vertical))
-                .build();
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(start_lat, start_lng), 45));
-
+        if (MyLocationListener.currentLocation != null) {
+            // add markers for each place on the route to visit
+            if (dsts != null) {
+                for (int i = 1; i < dsts.length; i++) {
+                    Response res = sendRequest(buildPlace(dsts[i]));
+                    double lat = 0.0;
+                    double lng = 0.0;
+                    String name = "";
+                    try {
+                        JSONObject jsonResponse = new JSONObject(res.body().string());
+                        lat = jsonResponse.getJSONArray("candidates").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
+                        lng = jsonResponse.getJSONArray("candidates").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
+                        name = jsonResponse.getJSONArray("candidates").getJSONObject(0).getString("formatted_address");
+                        MarkerOptions place = new MarkerOptions().position(new LatLng(lat, lng)).title(name);
+                        googleMap.addMarker(place);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            // add users location
+            userLocation = googleMap.addMarker(MyLocationListener.userLocationMarker);
+            // move the camera
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MyLocationListener.currentLocation, 15));
+        }
     }
 
 // "https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
+// "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=seattle&inputtype=textquery&fields=formatted_address%2Cgeometry&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
 
     public void buildRoute(String[] destinations) {
         this.URL = "https://maps.googleapis.com/maps/api/directions/json?origin=";
@@ -146,6 +175,42 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
             }
         }
         this.URL += "&key=" + BuildConfig.MAPS_API_KEY;
+    }
+
+    public String buildPlace(String place) {
+        String query = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=";
+        query += place;
+        query += "&inputtype=textquery&locationbias=circle:";
+        query += 1000; // radius of place search
+        query += "@" + MyLocationListener.currentLocation.latitude + "," + MyLocationListener.currentLocation.longitude;
+        query += "&fields=formatted_address%2Cgeometry&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
+        return query;
+    }
+
+    public Response sendRequest(String url) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        Response response = null;
+        try {
+            response = client.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    // Updates the position of the marker
+    public static void updateUserLocation(LatLng newPos) {
+        if (userLocation != null) {
+            userLocation.setPosition(newPos);
+        }
     }
 
 }
