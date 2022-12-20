@@ -7,10 +7,26 @@
     android:background="@color/red_shade_2">
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent" >
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fragmentContainerView"
+            android:name="com.example.exploro.controllers.MiniMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_mini_map" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/createRoute"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp">
 
     </LinearLayout>
 
@@ -27,7 +43,7 @@
             android:layout_width="180dp"
             android:layout_height="48dp"
             android:layout_marginTop="5dp"
-            android:layout_marginLeft="15dp"
+            android:layout_marginLeft="20dp"
             android:backgroundTint="@color/white_shade_1"
             android:elevation="5dp"
             android:insetTop="0dp"
@@ -47,13 +63,13 @@
             android:layout_height="48dp"
             android:layout_marginTop="5dp"
             android:layout_marginLeft="15dp"
-            android:backgroundTint="@color/white_shade_1"
+            android:backgroundTint="@color/green_shade_1"
             android:elevation="5dp"
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:stateListAnimator="@null"
             android:text="@string/start_route"
-            android:textColor="@color/red_shade_2"
+            android:textColor="@color/white_shade_1"
             app:cornerRadius="10dp"
             tools:ignore="TextContrastCheck" />
 
