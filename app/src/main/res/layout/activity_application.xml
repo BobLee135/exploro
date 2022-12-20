@@ -13,7 +13,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/red_shade_2">
+        android:background="@color/red_shade_2"
+        android:visibility="visible">
 
         <ImageView
             android:id="@+id/logo2"
@@ -21,23 +22,23 @@
             android:layout_height="70dp"
             android:layout_marginTop="10dp"
             android:contentDescription="@string/logo"
+            android:src="@drawable/logo_svg"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/logo_svg" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/selectFragmentContainer"
-        android:name="com.example.exploro.controllers.SelectDestinations"
-        android:layout_width="413dp"
-        android:layout_height="733dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout="@layout/select_fragment" />
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/selectFragmentContainer"
+            android:name="com.example.exploro.controllers.SelectDestinations"
+            android:layout_width="413dp"
+            android:layout_height="733dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout="@layout/select_fragment" />
 
         <Button
             android:id="@+id/createOwnRouteBtn"
@@ -94,15 +95,16 @@
             tools:ignore="SpeakableTextPresentCheck" />
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinatorLayout"
+            android:id="@+id/coordinatorLayout"
             android:layout_width="0dp"
             android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/createOwnRouteBtn"
-        app:layout_constraintVertical_bias="1.0">
+            app:layout_constraintVertical_bias="1.0">
 
 
             <FrameLayout
@@ -134,65 +136,33 @@
                     android:background="@color/transparent"
                     android:contentDescription="bottom sheet drag button" />
 
-                <LinearLayout
+                <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="575dp"
-                    android:background="#00FFFFFF"
-                    android:orientation="vertical"
-                    android:padding="30dp">
+                    android:layout_height="match_parent"
+                    android:paddingTop="@dimen/bottom_sheet_peek_height">
 
-                    <TextView
-                        android:id="@+id/locationsFragmentTitleText"
+                    <LinearLayout
+                        android:id="@+id/locationCategoryHolder"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:text="@string/locations_fragment_title"
-                        android:textAlignment="center"
-                        android:textColor="@color/text_red_half_transparent"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
+                        android:background="#00FFFFFF"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="30dp">
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/locationCategoryCard0"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        app:cardBackgroundColor="#00FFFFFF"
-                        app:cardCornerRadius="0dp"
-                        app:cardElevation="0dp">
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/locationCategoryLayout"
+                        <TextView
+                            android:id="@+id/locationsFragmentTitleText"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:text="@string/locations_fragment_title"
+                            android:textAlignment="center"
+                            android:textColor="@color/text_red_half_transparent"
+                            android:textSize="24sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </ScrollView>
 
-                            <TextView
-                                android:id="@+id/locationsCategoryText0"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Restaurants"
-                                android:textAlignment="textStart"
-                                android:textColor="@color/text_red_half_transparent"
-                                android:textSize="22sp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <TextView
-                                android:id="@+id/viewAllText0"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/view_all"
-                                android:textAlignment="textEnd"
-                                android:textColor="@color/text_blue"
-                                android:textSize="18sp"
-                                app:layout_constraintBottom_toBottomOf="@+id/locationsCategoryText0"
-                                app:layout_constraintEnd_toEndOf="parent" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                </LinearLayout>
             </FrameLayout>
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
