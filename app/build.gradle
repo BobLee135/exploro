@@ -36,7 +36,8 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildFeatures {
-        viewBinding true
+        viewBinding = true
+        dataBinding = true
     }
 }
 
@@ -46,6 +47,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database'
     implementation 'com.google.gms:google-services:4.3.14'
     implementation 'com.github.bumptech.glide:glide:4.14.2'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
 
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     implementation 'com.google.maps.android:android-maps-utils:0.5+'
