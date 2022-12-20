@@ -1,12 +1,22 @@
 package com.example.exploro.controllers;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.AttributeSet;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.exploro.BuildConfig;
 import com.example.exploro.R;
@@ -58,7 +68,26 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.miniMap);
         mapFragment.getMapAsync(this);
+
+
+        Button finish = (Button) findViewById(R.id.finishRoute);
+        finish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                /*
+                        INSERT ADD XP TO USER CODE HERE
+                 */
+
+
+                // Jump back to main page
+                Activity currentActivity = getSupportFragmentManager().findFragmentById(R.id.miniMap).getActivity();
+                Intent intent = new Intent(currentActivity, ApplicationActivityController.class);
+                startActivity(intent);
+            }
+        });
     }
+
 
     /**
      * Manipulates the map once available.
