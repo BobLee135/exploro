@@ -132,17 +132,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout="@layout/select_fragment" />
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/selectFragmentContainer"
-            android:name="com.example.exploro.controllers.SelectDestinations"
-            android:layout_width="413dp"
-            android:layout_height="733dp"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:layout="@layout/select_fragment" />
 
         <Button
             android:id="@+id/createOwnRouteBtn"
@@ -274,6 +263,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
