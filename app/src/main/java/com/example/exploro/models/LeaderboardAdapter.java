@@ -17,7 +17,6 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
 
     public LeaderboardAdapter(List<User> users) {
         mUsers = users;
-        System.out.println("SETTING LEADERBOARD ADAPTER");
         for (User user : users){
             System.out.println(user.username);
             System.out.println(user.experience);
@@ -35,8 +34,6 @@ public class LeaderboardAdapter extends RecyclerView.Adapter<LeaderboardAdapter.
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         User user = mUsers.get(position);
-        System.out.println("THIS MAFK?" + user.username);
-        System.out.println("THIS MAFK?" + user.experience);
         holder.mUsernameTextView.setText(user.getUsername());
         holder.mLevelTextView.setText(String.valueOf(user.getExperience()/10));
     }
