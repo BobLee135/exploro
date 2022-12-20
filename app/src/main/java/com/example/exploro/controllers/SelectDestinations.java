@@ -119,6 +119,9 @@ public class SelectDestinations extends Fragment {
                                 e.printStackTrace();
                             }
 
+                            // Update the text field with the address
+                            newDst.setText(name);
+
                             // Pin the location on the map
                             LatLng search = new LatLng(lat, lng);
                             MarkerOptions markerOptions = new MarkerOptions().position(search).title(name);
