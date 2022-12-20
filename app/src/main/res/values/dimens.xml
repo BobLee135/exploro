@@ -2,5 +2,5 @@
 <resources>
     <dimen name="bottom_sheet_peek_height">35dp</dimen>
     <dimen name="location_holder_width">300dp</dimen>
-    <dimen name="location_view_height">185dp</dimen>
+    <dimen name="location_view_height">170dp</dimen>
 </resources>
