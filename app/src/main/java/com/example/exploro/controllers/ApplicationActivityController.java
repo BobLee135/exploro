@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,7 +107,7 @@ public class ApplicationActivityController extends AppCompatActivity {
                     drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-        NavigationView nw = findViewById(R.id.nav_view);
+        NavigationView nw = drawerLayout.findViewById(R.id.nav_view);
         nw.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
 
             @Override
@@ -130,11 +131,25 @@ public class ApplicationActivityController extends AppCompatActivity {
         });
 
 
+        // See pre planned routes button
+        Button prePlanned = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
+        prePlanned.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.INVISIBLE);
+                findViewById(R.id.createOwnRouteBtn).setVisibility(View.INVISIBLE);
+                findViewById(R.id.logo2).setVisibility(View.INVISIBLE);
+
+                findViewById(R.id.listOfPrePlanned).setVisibility(View.VISIBLE);
+                findViewById(R.id.prePlannedCreateOwn).setVisibility(View.VISIBLE);
+            }
+        });
+
+        // Create my own route button
         Button myButton = (Button) findViewById(R.id.createOwnRouteBtn);
         myButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.INVISIBLE);
                 findViewById(R.id.createOwnRouteBtn).setVisibility(View.INVISIBLE);
                 findViewById(R.id.logo2).setVisibility(View.INVISIBLE);
@@ -142,7 +157,22 @@ public class ApplicationActivityController extends AppCompatActivity {
 
                 SelectDestinations selectDst = new SelectDestinations();
                 findViewById(R.id.selectFragmentContainer).setVisibility(View.VISIBLE);
+            }
+        });
 
+        // Create my own route button in pre planned view
+        Button preCreate = (Button) findViewById(R.id.prePlannedCreateOwn);
+        preCreate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.INVISIBLE);
+                findViewById(R.id.createOwnRouteBtn).setVisibility(View.INVISIBLE);
+                findViewById(R.id.logo2).setVisibility(View.INVISIBLE);
+                findViewById(R.id.sideNavBarToggle).setVisibility(View.INVISIBLE);
+                findViewById(R.id.prePlannedCreateOwn).setVisibility(View.INVISIBLE);
+
+                SelectDestinations selectDst = new SelectDestinations();
+                findViewById(R.id.selectFragmentContainer).setVisibility(View.VISIBLE);
             }
         });
 
