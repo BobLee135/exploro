@@ -16,6 +16,99 @@
         android:background="@color/red_shade_2"
         android:visibility="visible">
 
+
+        <!--
+                PRE PLANNED
+        -->
+
+        <LinearLayout
+            android:id="@+id/listOfPrePlanned"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.021"
+            android:visibility="invisible"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <ImageView
+                android:id="@+id/imageViewPerfect"
+                android:layout_width="320dp"
+                android:layout_height="90dp"
+                android:layout_marginBottom="10dp"
+                android:layout_weight="1"
+                android:elevation="5dp"
+                android:src="@drawable/food"
+                app:cornerRadius="10dp" />
+            <ImageView
+                android:id="@+id/imageViewFood"
+                android:layout_width="320dp"
+                android:layout_height="90dp"
+                android:layout_weight="1"
+                android:elevation="5dp"
+                android:layout_marginBottom="10dp"
+                app:cornerRadius="10dp"
+                android:src="@drawable/pub" />
+            <ImageView
+                android:id="@+id/imageViewPub"
+                android:layout_width="320dp"
+                android:layout_height="90dp"
+                android:layout_weight="1"
+                android:elevation="5dp"
+                android:layout_marginBottom="10dp"
+                app:cornerRadius="10dp"
+                android:src="@drawable/mustsee" />
+            <ImageView
+                android:id="@+id/imageViewMustSee"
+                android:layout_width="320dp"
+                android:layout_height="90dp"
+                android:layout_weight="1"
+                android:elevation="5dp"
+                android:layout_marginBottom="10dp"
+                app:cornerRadius="10dp"
+                android:src="@drawable/party" />
+            <ImageView
+                android:id="@+id/imageViewParty"
+                android:layout_width="320dp"
+                android:layout_height="90dp"
+                android:layout_weight="1"
+                android:elevation="5dp"
+                android:layout_marginBottom="10dp"
+                app:cornerRadius="10dp"
+                android:src="@drawable/wine" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/prePlannedCreateOwn"
+            android:layout_width="280dp"
+            android:layout_height="48dp"
+            android:backgroundTint="@color/white_shade_1"
+            android:elevation="5dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:stateListAnimator="@null"
+            android:text="@string/create_route"
+            android:textColor="@color/red_shade_2"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.496"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.926"
+            tools:ignore="TextContrastCheck" />
+
+        <!--
+                END PRE PLANNED
+        -->
+
+
         <ImageView
             android:id="@+id/logo2"
             android:layout_width="100dp"
@@ -170,6 +263,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
