@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,7 +107,7 @@ public class ApplicationActivityController extends AppCompatActivity {
                     drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-        NavigationView nw = findViewById(R.id.nav_view);
+        NavigationView nw = drawerLayout.findViewById(R.id.nav_view);
         nw.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
 
             @Override
