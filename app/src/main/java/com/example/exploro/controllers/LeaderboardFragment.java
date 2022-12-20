@@ -32,58 +32,6 @@ public class LeaderboardFragment extends Fragment {
     public LeaderboardFragment() {
         // Required empty public constructor
     }
-    public void checkDisplay(boolean checked, RecyclerView view){
-        Intent intent = this.getActivity().getIntent();
-        UserModel userModel = new UserModel(getActivity());
-        String username = intent.getStringExtra("USER_username");
-        if (!checked){
-
-            userModel.getAllUserObjects(new UserModel.ResultStatus() {
-                @Override
-                public void resultLoaded(List<User> users) {
-
-                    Collections.sort(users, new Comparator<User>() {
-                        @Override
-                        public int compare(User user1, User user2) {
-                            return Integer.compare(user1.experience, user2.experience);
-                        }
-
-                    });
-                    Collections.reverse(users);
-                    //adapter = new LeaderboardAdapter(users);
-                    //recyclerView.setAdapter(adapter);
-                    //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                    System.out.println(users.size());
-                }
-            });
-        }else {
-            userModel.getFriendsUserObjects(username, new UserModel.ResultStatus() {
-                @Override
-                public void resultLoaded(List<User> users) {
-
-                    Collections.sort(users, new Comparator<User>() {
-                        @Override
-                        public int compare(User user1, User user2) {
-                            return Integer.compare(user1.experience, user2.experience);
-                        }
-
-                    });
-                    Collections.reverse(users);
-                    for (User user : users){
-                        System.out.println(user.username);
-                    }
-
-
-
-
-
-                }
-            });
-        }
-    }
-
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -99,25 +47,30 @@ public class LeaderboardFragment extends Fragment {
         UserModel userModel = new UserModel(getActivity());
         String username = intent.getStringExtra("USER_username");
         SwitchCompat mySwitch = (SwitchCompat) view.findViewById(R.id.switch1);
-        checkDisplay(mySwitch.isChecked(), recyclerView);
-        List<User> test = new ArrayList<>();
-        User g = new User("askldj", "123", "HEH", "123", "123");
-        g.experience = 100;
-        User y = new User("askldj", "123", "HAAAH", "123", "123");
-        y.experience = 110;
-        test.add(g);
-        test.add(y);
-        adapter = new LeaderboardAdapter(test);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        userModel.getAllUserObjects(new UserModel.ResultStatus(){
+            @Override
+            public void resultLoaded(List<User> users) {
+                Collections.sort(users, new Comparator<User>() {
+                    @Override
+                    public int compare(User user1, User user2) {
+                        return Integer.compare(user1.experience, user2.experience);
+                    }
+                });
+                Collections.reverse(users);
+                System.out.println(users.size());
+                adapter = new LeaderboardAdapter(users);
+                recyclerView.setAdapter(adapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            }
+        });
         mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                getActivity().findViewById(R.id.nofriends).setVisibility(View.INVISIBLE);
                 Intent intent = getActivity().getIntent();
                 UserModel userModel = new UserModel(getActivity());
                 String username = intent.getStringExtra("USER_username");
                 if (!b){
-
                     userModel.getAllUserObjects(new UserModel.ResultStatus() {
                         @Override
                         public void resultLoaded(List<User> users) {
@@ -127,12 +80,8 @@ public class LeaderboardFragment extends Fragment {
                                 public int compare(User user1, User user2) {
                                     return Integer.compare(user1.experience, user2.experience);
                                 }
-
                             });
                             Collections.reverse(users);
-                            //adapter = new LeaderboardAdapter(users);
-                            //recyclerView.setAdapter(adapter);
-                            //recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                             System.out.println(users.size());
                             adapter = new LeaderboardAdapter(users);
                             recyclerView.setAdapter(adapter);
@@ -143,37 +92,27 @@ public class LeaderboardFragment extends Fragment {
                     userModel.getFriendsUserObjects(username, new UserModel.ResultStatus() {
                         @Override
                         public void resultLoaded(List<User> users) {
-
+                            if (users.isEmpty()){
+                                getActivity().findViewById(R.id.nofriends).setVisibility(View.VISIBLE);
+                            }
                             Collections.sort(users, new Comparator<User>() {
                                 @Override
                                 public int compare(User user1, User user2) {
                                     return Integer.compare(user1.experience, user2.experience);
                                 }
-
                             });
                             Collections.reverse(users);
                             for (User user : users){
                                 System.out.println(user.username);
                             }
-                            adapter = new LeaderboardAdapter(test);
+                            adapter = new LeaderboardAdapter(users);
                             recyclerView.setAdapter(adapter);
                             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-
-
-
-
                         }
                     });
                 }
-
             }
-
         });
-
         return view;
-
-
-
     }
 }
