@@ -6,7 +6,6 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +48,9 @@ public class LoginFragmentController extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        // Start loading application activity in the background
+        Intent intent = new Intent(getActivity(), ApplicationActivityController.class);
 
         // Get Objects
         View view = inflater.inflate(R.layout.login_fragment, container, false);
@@ -104,7 +106,7 @@ public class LoginFragmentController extends Fragment {
                         passwordInput.setText("");
 
                         // Send user info to new activity
-                        Intent intent = new Intent(getActivity(), ApplicationActivityController.class);
+
                         intent.putExtra("USER_fullname", users.get(0).getName());
                         intent.putExtra("USER_username", users.get(0).getUsername());
                         intent.putExtra("USER_email", users.get(0).getEmail());
