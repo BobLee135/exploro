@@ -8,6 +8,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.exploro.Location;
 import com.example.exploro.RunnableWithIndex;
 import com.example.exploro.DataObservable;
 
@@ -46,6 +48,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -175,6 +178,58 @@ public class ApplicationActivityController extends AppCompatActivity {
                 findViewById(R.id.selectFragmentContainer).setVisibility(View.VISIBLE);
             }
         });
+
+        /*
+        *   Pre planned routes buttons
+        */
+        MapsActivityController mac = new MapsActivityController();
+
+        ImageView viewFood = (ImageView) findViewById(R.id.imageViewFood);
+        viewFood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int number_of_dsts = 4;
+                Location[] destinationList = new Location[1 + number_of_dsts]; // user location + destinations
+                destinationList[0] = new Location("You", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
+
+                Location[] dsts = mac.buildPlaces("restaurant", "", number_of_dsts);
+                for (int i = 0; i < dsts.length; i++) {
+                    destinationList[i+1] = dsts[i];
+                }
+
+                shipAndSendRoute(destinationList);
+            }
+        });
+        ImageView viewPub = (ImageView) findViewById(R.id.imageViewPub);
+        viewPub.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        ImageView viewMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
+        viewMustSee.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        ImageView viewParty = (ImageView) findViewById(R.id.imageViewParty);
+        viewParty.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        ImageView viewPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
+        viewPerfect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+
 
         /* LOADING PLACES FOR BOTTOM SHEET, DISABLED ATM TO REDUCE COST
         MapsAPICaller.PlaceTypes[] categories = {
@@ -307,5 +362,11 @@ public class ApplicationActivityController extends AppCompatActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
         else
             super.onBackPressed();
+    }
+
+    private void shipAndSendRoute(Location[] destinations) {
+        Intent intent = new Intent(this, MapsActivityController.class);
+        intent.putExtra("destinationList", destinations);
+        startActivity(intent);
     }
 }
