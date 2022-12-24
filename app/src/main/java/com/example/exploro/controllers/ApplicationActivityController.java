@@ -204,28 +204,64 @@ public class ApplicationActivityController extends AppCompatActivity {
         viewPub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int number_of_dsts = 4;
+                Location[] destinationList = new Location[1 + number_of_dsts]; // user location + destinations
+                destinationList[0] = new Location("You", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
 
+                Location[] dsts = mac.buildPlaces("bar", "", number_of_dsts);
+                for (int i = 0; i < dsts.length; i++) {
+                    destinationList[i+1] = dsts[i];
+                }
+
+                shipAndSendRoute(destinationList);
             }
         });
         ImageView viewMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
         viewMustSee.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int number_of_dsts = 4;
+                Location[] destinationList = new Location[1 + number_of_dsts]; // user location + destinations
+                destinationList[0] = new Location("You", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
 
+                Location[] dsts = mac.buildPlaces("must see", "", number_of_dsts);
+                for (int i = 0; i < dsts.length; i++) {
+                    destinationList[i+1] = dsts[i];
+                }
+
+                shipAndSendRoute(destinationList);
             }
         });
         ImageView viewParty = (ImageView) findViewById(R.id.imageViewParty);
         viewParty.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int number_of_dsts = 4;
+                Location[] destinationList = new Location[1 + number_of_dsts]; // user location + destinations
+                destinationList[0] = new Location("You", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
 
+                destinationList[1] = mac.buildPlace("bar");
+                destinationList[2] = mac.buildPlace("nightclub");
+                destinationList[3] = mac.buildPlace("kebab");
+                destinationList[4] = mac.buildPlace("hotel");
+
+                shipAndSendRoute(destinationList);
             }
         });
         ImageView viewPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
         viewPerfect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                int number_of_dsts = 4;
+                Location[] destinationList = new Location[1 + number_of_dsts]; // user location + destinations
+                destinationList[0] = new Location("You", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
 
+                destinationList[1] = mac.buildPlace("park");
+                destinationList[2] = mac.buildPlace("bowling");
+                destinationList[3] = mac.buildPlace("restaurant");
+                destinationList[4] = mac.buildPlace("bar");
+
+                shipAndSendRoute(destinationList);
             }
         });
 
