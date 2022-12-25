@@ -29,6 +29,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import com.example.exploro.Location;
 import com.example.exploro.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -104,26 +105,15 @@ public class SelectDestinations extends Fragment {
                                 && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
 
                             // Send a request for the location
-                            Response response = mac.sendRequest(mac.buildPlace(textView.getText().toString()));
-                            double lat = 0.0;
-                            double lng = 0.0;
-                            String name = "Location not found";
-                            try {
-                                JSONObject jsonResponse = new JSONObject(response.body().string());
-                                lat = jsonResponse.getJSONArray("candidates").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
-                                lng = jsonResponse.getJSONArray("candidates").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
-                                name = jsonResponse.getJSONArray("candidates").getJSONObject(0).getString("formatted_address");
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            Location destination = mac.buildPlace(textView.getText().toString());
+
+                            // Update the text field with the correct address
+                            newDst.setText(destination.getAddress());
 
                             // Pin the location on the map
-                            LatLng search = new LatLng(lat, lng);
-                            MarkerOptions markerOptions = new MarkerOptions().position(search).title(name);
+                            MarkerOptions markerOptions = new MarkerOptions().position(destination.getLocation()).title(destination.getAddress());
                             MiniMapFragment.minimap.addMarker(markerOptions);
-                            MiniMapFragment.minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(search, 15));
+                            MiniMapFragment.minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getLocation(), 15));
 
                             return true;
                         }
@@ -145,24 +135,20 @@ public class SelectDestinations extends Fragment {
                 // Retrieve all destinations
                 ViewGroup layout = (ViewGroup) view.findViewById(R.id.createRoute);
 
-                String[] destinationList = new String[layout.getChildCount()+1];
+                Location[] destinationList = new Location[layout.getChildCount()+1];
                 // Users location should be the origin of the route
-                destinationList[0] = MyLocationListener.currentAddress;
+                destinationList[0] = new Location("You", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
                 // Loop through each of the views in the layout
                 for (int i = 0; i < layout.getChildCount(); i++) {
                     View view = layout.getChildAt(i);
 
                     if (view instanceof EditText) {
-                        destinationList[i+1] = ((EditText) view).getText().toString();
+                        destinationList[i+1] = mac.buildPlace(((EditText) view).getText().toString());
                     }
                 }
 
                 // Add all destinations as a bundle and send to the new activity
-                Bundle bundle = new Bundle();
-                bundle.putStringArray("destinationList", destinationList);
-                Intent intent = new Intent(getActivity(), MapsActivityController.class);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                shipAndSendRoute(destinationList);
             }
         });
 
@@ -175,6 +161,12 @@ public class SelectDestinations extends Fragment {
     public int dpToPx(int dp) {
         DisplayMetrics displayMetrics = getContext().getResources().getDisplayMetrics();
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+    }
+
+    private void shipAndSendRoute(Location[] destinations) {
+        Intent intent = new Intent(getActivity(), MapsActivityController.class);
+        intent.putExtra("destinationList", destinations);
+        startActivity(intent);
     }
 
 }
