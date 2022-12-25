@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -41,12 +40,14 @@
             android:name=".controllers.MapsActivityController"
             android:exported="false"
             android:label="@string/title_activity_maps"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/Theme.MaterialComponents.NoActionBar"/>
 
         <!-- Main -->
         <activity
             android:name=".controllers.MainActivityController"
             android:exported="true"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/Theme.MaterialComponents.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -63,6 +64,7 @@
         <activity
             android:name=".controllers.ApplicationActivityController"
             android:exported="false"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/Theme.MaterialComponents.NoActionBar">
         </activity>
     </application>
