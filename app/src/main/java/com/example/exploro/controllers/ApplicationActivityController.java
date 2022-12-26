@@ -4,7 +4,6 @@ package com.example.exploro.controllers;
 import androidx.annotation.NonNull;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -13,29 +12,20 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.exploro.Location;
-import com.example.exploro.RunnableWithIndex;
 import com.example.exploro.DataObservable;
 
-import androidx.annotation.NonNull;
-import androidx.core.view.GravityCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
-import com.bumptech.glide.Glide;
-import com.example.exploro.BuildConfig;
 
 import com.example.exploro.LocationsBottomSheetBehavior;
 import com.example.exploro.MapsAPICaller;
@@ -49,12 +39,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.Locale;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 public class ApplicationActivityController extends AppCompatActivity {
 
     private MapsAPICaller mMapsApiCaller;
@@ -63,6 +47,73 @@ public class ApplicationActivityController extends AppCompatActivity {
     private GoogleMap mMap;
     private LocationsBottomSheetBehavior mLocationsBottomSheetBehavior;
     public DrawerLayout drawerLayout;
+    private float initOffset = -200f;
+
+    /**
+     * Lerp function
+     *
+     * @param start - Start value
+     * @param end - Value to end at
+     * @param point - point from 0-1 (start-end ratio)
+     * @return float point value of lerp
+     */
+    private float lerp(float start, float end, float point) {
+        return start + point * (end - start);
+    }
+
+    // Set preplanned routes buttons to the initialized position and alpha values
+    // TODO: CLEANUP
+    private void buttonsInit() {
+        Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
+        Button preplannedButton = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
+        ImageView IVFood = (ImageView) findViewById(R.id.imageViewFood);
+        ImageView IVPub = (ImageView) findViewById(R.id.imageViewPub);
+        ImageView IVPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
+        ImageView IVMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
+        ImageView IVParty = (ImageView) findViewById(R.id.imageViewParty);
+
+        IVFood.setAlpha(0f);
+        IVPub.setAlpha(0f);
+        IVPerfect.setAlpha(0f);
+        IVMustSee.setAlpha(0f);
+        IVParty.setAlpha(0f);
+        preplannedButton.setAlpha(1f);
+
+        IVFood.setTranslationY(initOffset);
+        IVPub.setTranslationY(initOffset);
+        IVPerfect.setTranslationY(initOffset);
+        IVMustSee.setTranslationY(initOffset);
+        IVParty.setTranslationY(initOffset);
+        preplannedButton.setTranslationY(0);
+        createButton.setTranslationY(0);
+    }
+
+    // Set planned routes buttons in the finalized position and alpha values
+    // TODO: CLEANUP
+    private void buttonsFinalState() {
+        Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
+        Button preplannedButton = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
+        ImageView IVFood = (ImageView) findViewById(R.id.imageViewFood);
+        ImageView IVPub = (ImageView) findViewById(R.id.imageViewPub);
+        ImageView IVPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
+        ImageView IVMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
+        ImageView IVParty = (ImageView) findViewById(R.id.imageViewParty);
+
+        IVFood.setAlpha(1f);
+        IVPub.setAlpha(1f);
+        IVPerfect.setAlpha(1f);
+        IVMustSee.setAlpha(1f);
+        IVParty.setAlpha(1f);
+        preplannedButton.setAlpha(0f);
+
+        IVFood.setTranslationY(0f);
+        IVPub.setTranslationY(0f);
+        IVPerfect.setTranslationY(0f);
+        IVMustSee.setTranslationY(0f);
+        IVParty.setTranslationY(0f);
+
+        createButton.setTranslationY(1340f);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,29 +125,69 @@ public class ApplicationActivityController extends AppCompatActivity {
 
         View bottomSheet = (View) findViewById(R.id.locationBottomSheet);
         Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
-        ViewGroup.LayoutParams params = createButton.getLayoutParams();
+        Button preplannedButton = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
+        ImageView IVFood = (ImageView) findViewById(R.id.imageViewFood);
+        ImageView IVPub = (ImageView) findViewById(R.id.imageViewPub);
+        ImageView IVPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
+        ImageView IVMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
+        ImageView IVParty = (ImageView) findViewById(R.id.imageViewParty);
+
+        buttonsInit();
 
         // Get bottom sheet and set it to expanded by default
         mLocationsBottomSheetBehavior = (LocationsBottomSheetBehavior) LocationsBottomSheetBehavior.from(bottomSheet);
         mLocationsBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        int bottomSheetState = mLocationsBottomSheetBehavior.getState();
-
         mLocationsBottomSheetBehavior.addBottomSheetCallback(new LocationsBottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View v, int state) {
-                if (bottomSheetState == BottomSheetBehavior.STATE_EXPANDED) {
-                    Log.d("STATETEST", "STATE: " + state);
-                }
                 if (state == BottomSheetBehavior.STATE_EXPANDED)
-                    createButton.setTranslationY(0);
+                    buttonsInit();
             }
 
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-                Log.d("STATETEST", "PEEK: " + mLocationsBottomSheetBehavior.getPeekHeight());
-                Log.d("STATETEST", "SLIDE: " + (slideOffset * -1 + 1));
-                createButton.setTranslationY(1200 * (slideOffset * -1 + 1));
+                // If sheet almost all the way up, reset buttons
+                if (slideOffset >= 0.9)
+                    buttonsInit();
+
+                // get the inverse of slideOffset, so instead of going 1 to 0, it goes 0 - 1
+                float inverseOffset = (slideOffset * -1 + 1);
+
+                // transition buttons depending on slide distance of bottom sheet
+                createButton.setTranslationY(1340 * inverseOffset);
+                preplannedButton.setAlpha(1 * slideOffset);
+
+                if (inverseOffset >= 0.1) {
+                    IVFood.setAlpha(1 * inverseOffset);
+                    IVFood.setTranslationY(lerp(initOffset, 0, inverseOffset));
+                } else
+                    IVFood.setAlpha(0f);
+
+                if (inverseOffset >= 0.3) {
+                    IVPub.setAlpha(1 * inverseOffset);
+                    IVPub.setTranslationY(lerp(initOffset, 0, inverseOffset));
+                } else
+                    IVPub.setAlpha(0f);
+
+                if (inverseOffset >= 0.5) {
+                    IVMustSee.setAlpha(1 * inverseOffset);
+                    IVMustSee.setTranslationY(lerp(initOffset, 0, inverseOffset));
+                } else
+                    IVMustSee.setAlpha(0f);
+
+                if (inverseOffset >= 0.7) {
+                    IVParty.setAlpha(1 * inverseOffset);
+                    IVParty.setTranslationY(lerp(initOffset, 0, inverseOffset));
+                } else
+                    IVParty.setAlpha(0f);
+
+                if (inverseOffset >= 0.9) {
+                    IVPerfect.setAlpha(1 * inverseOffset);
+                    IVPerfect.setTranslationY(lerp(initOffset, 0, inverseOffset));
+                } else
+                    IVPerfect.setAlpha(0f);
+
             }
         });
 
@@ -150,12 +241,9 @@ public class ApplicationActivityController extends AppCompatActivity {
         prePlanned.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.INVISIBLE);
-                findViewById(R.id.createOwnRouteBtn).setVisibility(View.INVISIBLE);
-                findViewById(R.id.logo2).setVisibility(View.INVISIBLE);
-
-                findViewById(R.id.listOfPrePlanned).setVisibility(View.VISIBLE);
-                findViewById(R.id.prePlannedCreateOwn).setVisibility(View.VISIBLE);
+                buttonsFinalState();
+                // Hide bottom sheet
+                mLocationsBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
 
@@ -171,6 +259,8 @@ public class ApplicationActivityController extends AppCompatActivity {
 
                 SelectDestinations selectDst = new SelectDestinations();
                 findViewById(R.id.selectFragmentContainer).setVisibility(View.VISIBLE);
+                // Hide bottom sheet
+                mLocationsBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
 

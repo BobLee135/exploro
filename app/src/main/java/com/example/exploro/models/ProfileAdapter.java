@@ -19,9 +19,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     public ProfileAdapter(List<Trips> travelList) {
         mTravelList = travelList;
         for (Trips trips : mTravelList){
-            System.out.println(trips.getCountry());
             System.out.println(trips.getCity());
             System.out.println(trips.getPlace());
+            System.out.println(trips.getCountry());
 
         }
 
