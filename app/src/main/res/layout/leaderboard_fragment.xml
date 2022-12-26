@@ -7,6 +7,7 @@
     android:background="@color/red_shade_1">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="415dp"
         android:layout_height="520dp"
         android:layout_marginTop="212dp"
@@ -38,11 +39,11 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
-            android:layout_width="168dp"
+            android:layout_width="0dp"
             android:layout_height="741dp"
-            android:layout_marginStart="100dp"
+            android:layout_marginStart="25dp"
             android:layout_marginTop="1dp"
-            android:layout_marginEnd="100dp"
+            android:layout_marginEnd="25dp"
             android:layout_marginBottom="1dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -52,7 +53,7 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/nofriends"
+            android:id="@+id/noFriendsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="125dp"
@@ -70,11 +71,11 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/leaderboardsImageView"
         android:layout_width="154dp"
         android:layout_height="112dp"
         android:layout_marginStart="128dp"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="129dp"
         android:layout_marginBottom="617dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -82,6 +83,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/crownlead" />
+
+    <Switch
+        android:id="@+id/onlyFriendsToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:text="Only Friends"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/leaderboardsTitleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Leaderboards"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/onlyFriendsToggle"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

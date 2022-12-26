@@ -19,7 +19,6 @@ import com.example.exploro.models.LeaderboardAdapter;
 import com.example.exploro.models.UserModel;
 import com.example.exploro.models.schemas.User;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -42,11 +41,17 @@ public class LeaderboardFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.leaderboard_fragment, container, false);
+
+        // Declare views
         recyclerView = view.findViewById(R.id.recycler_view);
+        Switch onlyFriendsToggle = (Switch) view.findViewById(R.id.onlyFriendsToggle);
+
+        //
         Intent intent = this.getActivity().getIntent();
-        UserModel userModel = new UserModel(getActivity());
         String username = intent.getStringExtra("USER_username");
-        SwitchCompat mySwitch = (SwitchCompat) view.findViewById(R.id.switch1);
+        UserModel userModel = new UserModel(getActivity());
+
+        // Init Trigger
         userModel.getAllUserObjects(new UserModel.ResultStatus(){
             @Override
             public void resultLoaded(List<User> users) {
@@ -63,14 +68,20 @@ public class LeaderboardFragment extends Fragment {
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             }
         });
-        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+        // Check for onlyFriendsToggle changed
+        onlyFriendsToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                getActivity().findViewById(R.id.nofriends).setVisibility(View.INVISIBLE);
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                // Hide no friends text
+                getActivity().findViewById(R.id.noFriendsText).setVisibility(View.INVISIBLE);
+
                 Intent intent = getActivity().getIntent();
                 UserModel userModel = new UserModel(getActivity());
                 String username = intent.getStringExtra("USER_username");
-                if (!b){
+
+                // Show all users
+                if (!checked){
                     userModel.getAllUserObjects(new UserModel.ResultStatus() {
                         @Override
                         public void resultLoaded(List<User> users) {
@@ -88,12 +99,12 @@ public class LeaderboardFragment extends Fragment {
                             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                         }
                     });
-                }else {
+                } else { // Show only friends
                     userModel.getFriendsUserObjects(username, new UserModel.ResultStatus() {
                         @Override
                         public void resultLoaded(List<User> users) {
                             if (users.isEmpty()){
-                                getActivity().findViewById(R.id.nofriends).setVisibility(View.VISIBLE);
+                                getActivity().findViewById(R.id.noFriendsText).setVisibility(View.VISIBLE);
                             }
                             Collections.sort(users, new Comparator<User>() {
                                 @Override

@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -201,12 +202,15 @@ public class ApplicationActivityController extends AppCompatActivity {
                     drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-        NavigationView nw = drawerLayout.findViewById(R.id.nav_view);
-        nw.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
 
+        NavigationView nw = drawerLayout.findViewById(R.id.nav_view);
+
+        // Handle nav bar inputs
+        nw.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if(item.getItemId() == R.id.nav_leaderboards) {
+                // Leaderboards
+                if (item.getItemId() == R.id.nav_leaderboards) {
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     LeaderboardFragment leaderboardFragment = new LeaderboardFragment();
@@ -218,8 +222,15 @@ public class ApplicationActivityController extends AppCompatActivity {
                     findViewById(R.id.logo2).setVisibility(View.INVISIBLE);
                     fragmentTransaction.commit();
 
+                    // Hide bottom sheet
+                    mLocationsBottomSheetBehavior.setState(mLocationsBottomSheetBehavior.STATE_COLLAPSED);
                     return true;
                 }
+
+                // Log out
+                if (item.getItemId() == R.id.nav_log_out)
+                    finish();
+
                 return false;
             }
         });
