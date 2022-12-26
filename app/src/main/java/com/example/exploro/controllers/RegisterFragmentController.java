@@ -18,6 +18,8 @@ import com.example.exploro.models.UserModel;
 import com.example.exploro.models.schemas.User;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,12 +81,9 @@ public class RegisterFragmentController extends Fragment {
                 String confirmPassword = confirmPasswordInputField.getText().toString();
 
                 // Check data validity
-                if (!isValid(fullName, email, username, password, confirmPassword)) {
-                    mMessageHelper.displaySnackbar("Invalid input", 3, "Error", v);
+                if (!isValid(fullName, email, username, password, confirmPassword))
                     return;
-                }
-
-
+                
                 // Check if username is available
                 userModel.findUsernameInUsers(username, new UserModel.ResultStatus() {
                     @Override
@@ -145,8 +144,57 @@ public class RegisterFragmentController extends Fragment {
                 || email.length() == 0
                 || username.length() == 0
                 || password.length() == 0
-                || confirmPassword.length() == 0)
+                || confirmPassword.length() == 0) {
+            mMessageHelper.displaySnackbar("All fields are not filled!", 3, "Error", getView());
             return false;
+        }
+
+
+        // Check for valid email
+        Pattern emailRegex = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+        Matcher emailValidator = emailRegex.matcher(email);
+        if(!emailValidator.find()) {
+            mMessageHelper.displaySnackbar("Email entered is not valid!", 3, "Error", getView());
+            return false;
+        }
+
+        Pattern upperCase = Pattern.compile("[A-Z]");
+        Pattern digit = Pattern.compile("[0-9]");
+        Pattern special = Pattern.compile ("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
+        //Pattern eight = Pattern.compile (".{8}");
+
+
+        Matcher hasUpperCase = upperCase.matcher(password);
+        Matcher hasDigit = digit.matcher(password);
+        Matcher hasSpecial = special.matcher(password);
+
+        if (!hasUpperCase.find()) {
+            mMessageHelper.displaySnackbar("Password requires at least one uppercase letter!", 3, "Error", getView());
+            return false;
+        }
+
+        if (!hasDigit.find()) {
+            mMessageHelper.displaySnackbar("Password requires at least one number!", 3, "Error", getView());
+            return false;
+        }
+
+        if (!hasSpecial.find()) {
+            mMessageHelper.displaySnackbar("Password requires at least one special character!", 3, "Error", getView());
+            return false;
+        }
+
+        // Check for password length, minimum 8, max 16
+        if (password.length() < 8 || password.length() > 16) {
+            mMessageHelper.displaySnackbar("Password has to be between 8 and 16 characters long!", 3, "Error", getView());
+            return false;
+        }
+
+        // Check for confirm password being the same as password
+        if (!confirmPassword.equals(password)) {
+            mMessageHelper.displaySnackbar("Confirm password and password does not match!", 3, "Error", getView());
+            return false;
+        }
+
         return true;
     }
 
