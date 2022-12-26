@@ -211,19 +211,45 @@ public class ApplicationActivityController extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 // Leaderboards
                 if (item.getItemId() == R.id.nav_leaderboards) {
+                    // Fragment transaction
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                     LeaderboardFragment leaderboardFragment = new LeaderboardFragment();
                     fragmentTransaction.replace(R.id.selectFragmentContainer, leaderboardFragment);
+
+                    // UI changes
                     drawerLayout.closeDrawer(GravityCompat.START);
                     findViewById(R.id.selectFragmentContainer).setVisibility(View.VISIBLE);
                     findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.INVISIBLE);
                     findViewById(R.id.createOwnRouteBtn).setVisibility(View.INVISIBLE);
                     findViewById(R.id.logo2).setVisibility(View.INVISIBLE);
-                    fragmentTransaction.commit();
 
                     // Hide bottom sheet
                     mLocationsBottomSheetBehavior.setState(mLocationsBottomSheetBehavior.STATE_COLLAPSED);
+
+                    fragmentTransaction.commit();
+                    return true;
+                }
+
+                // Profile
+                if (item.getItemId() == R.id.nav_profile) {
+                    // Fragment transaction
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    ProfileFragmentController profileFragment = new ProfileFragmentController();
+                    fragmentTransaction.replace(R.id.selectFragmentContainer, profileFragment);
+
+                    // UI changes
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    findViewById(R.id.selectFragmentContainer).setVisibility(View.VISIBLE);
+                    findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.createOwnRouteBtn).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.logo2).setVisibility(View.INVISIBLE);
+
+                    // Hide bottom sheet
+                    mLocationsBottomSheetBehavior.setState(mLocationsBottomSheetBehavior.STATE_COLLAPSED);
+
+                    fragmentTransaction.commit();
                     return true;
                 }
 
