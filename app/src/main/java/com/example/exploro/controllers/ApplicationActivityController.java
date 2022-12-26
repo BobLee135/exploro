@@ -253,6 +253,28 @@ public class ApplicationActivityController extends AppCompatActivity {
                     return true;
                 }
 
+                // Friends
+                if (item.getItemId() == R.id.nav_friends) {
+                    // Fragment transaction
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    FriendsFragmentController friendsFragment = new FriendsFragmentController();
+                    fragmentTransaction.replace(R.id.selectFragmentContainer, friendsFragment);
+
+                    // UI changes
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    findViewById(R.id.selectFragmentContainer).setVisibility(View.VISIBLE);
+                    findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.createOwnRouteBtn).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.logo2).setVisibility(View.INVISIBLE);
+
+                    // Hide bottom sheet
+                    mLocationsBottomSheetBehavior.setState(mLocationsBottomSheetBehavior.STATE_COLLAPSED);
+
+                    fragmentTransaction.commit();
+                }
+
+
                 // Log out
                 if (item.getItemId() == R.id.nav_log_out)
                     finish();

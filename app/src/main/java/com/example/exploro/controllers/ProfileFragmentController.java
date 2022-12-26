@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
@@ -13,14 +12,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.exploro.R;
-import com.example.exploro.models.LeaderboardAdapter;
 import com.example.exploro.models.ProfileAdapter;
 import com.example.exploro.models.UserModel;
-import com.example.exploro.models.schemas.User;
-
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 
 public class ProfileFragmentController extends Fragment {
