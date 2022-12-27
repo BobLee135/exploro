@@ -29,6 +29,9 @@ public class UserModel {
     public interface ResultStatus {
         void resultLoaded(List<User> users);
     }
+    public interface TripsResultStatus {
+        void tripsResultLoaded(List<Trips> trips);
+    }
 
     public UserModel(Activity activity){
         db = FirebaseDatabase.getInstance().getReference();
@@ -167,6 +170,7 @@ public class UserModel {
             }
         });
     }
+
     public void getFriendsUserObjects(String username, final ResultStatus result) {
 
         db.child("users").child(username).child("friends").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -240,7 +244,37 @@ public class UserModel {
     }
     public void addTrip(String username, String city, String country, String place){
         Trips trips = new Trips(city, country, place);
-        db.child("users").child(username).child("trips").push().setValue(trips);
+        db.child("users").child(username).child("trips").child(place).setValue(trips);
+    }
+    public void getUserTrips(String username, final TripsResultStatus result) {
+
+        db.child("users").child(username).child("trips").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Trips> trips = new ArrayList<>();
+                if (snapshot.exists()) {
+                    for (DataSnapshot children : snapshot.getChildren()) {
+                        Trips trip = children.getValue(Trips.class);
+                        trips.add(trip);
+                        System.out.println(trip.city);
+                    }
+                    result.tripsResultLoaded(trips);
+                    return;
+                } else{
+                    result.tripsResultLoaded(trips);
+                    return;
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("firebase", "Error getting data", error.toException());
+                System.out.println("HEHEHEHEHEHEH");
+                return;
+
+            }
+        });
     }
 
 
