@@ -1,8 +1,9 @@
 package com.example.exploro.models.schemas;
 
 public class Trips {
-    String city, country, place;
+    public String city, country, place;
 
+    public Trips() {}
     public Trips(String city, String country, String place) {
         this.city = city;
         this.country = country;
