@@ -289,15 +289,7 @@ public class ApplicationActivityController extends AppCompatActivity {
         viewFood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int number_of_dsts = 4;
-                Location[] destinationList = new Location[1 + number_of_dsts]; // user location + destinations
-                destinationList[0] = new Location("You", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
-
-                Location[] dsts = mac.buildPlaces("restaurant", "", number_of_dsts);
-                for (int i = 0; i < dsts.length; i++) {
-                    destinationList[i+1] = dsts[i];
-                }
-
+                String[] destinationList = {"restaurant", "restaurant", "restaurant", "restaurant"};
                 shipAndSendRoute(destinationList);
             }
         });
@@ -305,15 +297,7 @@ public class ApplicationActivityController extends AppCompatActivity {
         viewPub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int number_of_dsts = 4;
-                Location[] destinationList = new Location[1 + number_of_dsts]; // user location + destinations
-                destinationList[0] = new Location("You", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
-
-                Location[] dsts = mac.buildPlaces("bar", "", number_of_dsts);
-                for (int i = 0; i < dsts.length; i++) {
-                    destinationList[i+1] = dsts[i];
-                }
-
+                String[] destinationList = {"bar", "bar", "bar", "bar"};
                 shipAndSendRoute(destinationList);
             }
         });
@@ -321,15 +305,7 @@ public class ApplicationActivityController extends AppCompatActivity {
         viewMustSee.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int number_of_dsts = 4;
-                Location[] destinationList = new Location[1 + number_of_dsts]; // user location + destinations
-                destinationList[0] = new Location("You", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
-
-                Location[] dsts = mac.buildPlaces("must see", "", number_of_dsts);
-                for (int i = 0; i < dsts.length; i++) {
-                    destinationList[i+1] = dsts[i];
-                }
-
+                String[] destinationList = {"tourist attraction", "tourist attraction", "tourist attraction", "tourist attraction"};
                 shipAndSendRoute(destinationList);
             }
         });
@@ -337,15 +313,7 @@ public class ApplicationActivityController extends AppCompatActivity {
         viewParty.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int number_of_dsts = 4;
-                Location[] destinationList = new Location[1 + number_of_dsts]; // user location + destinations
-                destinationList[0] = new Location("You", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
-
-                destinationList[1] = mac.buildPlace("bar");
-                destinationList[2] = mac.buildPlace("nightclub");
-                destinationList[3] = mac.buildPlace("kebab");
-                destinationList[4] = mac.buildPlace("hotel");
-
+                String[] destinationList = {"bar", "nightclub", "kebab", "hotel"};
                 shipAndSendRoute(destinationList);
             }
         });
@@ -353,15 +321,7 @@ public class ApplicationActivityController extends AppCompatActivity {
         viewPerfect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int number_of_dsts = 4;
-                Location[] destinationList = new Location[1 + number_of_dsts]; // user location + destinations
-                destinationList[0] = new Location("You", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
-
-                destinationList[1] = mac.buildPlace("park");
-                destinationList[2] = mac.buildPlace("bowling");
-                destinationList[3] = mac.buildPlace("restaurant");
-                destinationList[4] = mac.buildPlace("bar");
-
+                String[] destinationList = {"park", "bowling", "restaurant", "bar"};
                 shipAndSendRoute(destinationList);
             }
         });
@@ -501,7 +461,7 @@ public class ApplicationActivityController extends AppCompatActivity {
             super.onBackPressed();
     }
 
-    private void shipAndSendRoute(Location[] destinations) {
+    private void shipAndSendRoute(String[] destinations) {
         Intent intent = new Intent(this, MapsActivityController.class);
         intent.putExtra("destinationList", destinations);
         startActivity(intent);
