@@ -30,7 +30,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.leaderboard_item, parent, false);
+                .inflate(R.layout.profile_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -57,9 +57,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
         public ViewHolder(View itemView) {
             super(itemView);
             //ONLY TEMP IDS RIGHT NOW
-            mCityTextView = itemView.findViewById(R.id.username_text_view);
-            mCountryTextView = itemView.findViewById(R.id.nav_view);
-            mPlaceTextView = itemView.findViewById(R.id.recycler_view);
+            mCityTextView = itemView.findViewById(R.id.city_text_view);
+            mCountryTextView = itemView.findViewById(R.id.country_text_view);
+            mPlaceTextView = itemView.findViewById(R.id.place_text_view);
 
         }
     }
