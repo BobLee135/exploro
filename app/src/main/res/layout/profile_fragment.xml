@@ -6,83 +6,74 @@
     android:layout_height="match_parent"
     android:background="@color/red_shade_1">
 
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:orientation="horizontal"
+        android:paddingHorizontal="50dp"
+        android:paddingVertical="60dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/profilePictureView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/user" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="10dp">
+
+            <TextView
+                android:id="@+id/profileNameText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Firstname Lastname"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+            <TextView
+                android:id="@+id/profileLevelText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Level" />
+
+        </LinearLayout>
+    </LinearLayout>
+
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="413dp"
-        android:layout_height="585dp"
-        android:layout_marginTop="146dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:background="@color/white_shade_2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/profileTripsList"
             android:layout_width="411dp"
-            android:layout_height="583dp"
-            android:layout_marginTop="49dp"
+            android:layout_height="0dp"
             android:layout_marginEnd="2dp"
+            android:padding="25dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/recentTripsText" />
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/recentTripsText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="162dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginEnd="187dp"
-            android:layout_marginBottom="555dp"
-            android:text="My trips"
+            android:text="Recent Trips"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="@color/black"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="184dp"
-        android:layout_marginTop="26dp"
-        android:layout_marginEnd="94dp"
-        android:layout_marginBottom="675dp"
-        android:text="Max Åkesson"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/imageView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="34dp"
-        android:layout_marginTop="7dp"
-        android:layout_marginEnd="249dp"
-        android:layout_marginBottom="596dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
-
-    <TextView
-        android:id="@+id/textView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="230dp"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="136dp"
-        android:layout_marginBottom="648dp"
-        android:text="Level 4"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
