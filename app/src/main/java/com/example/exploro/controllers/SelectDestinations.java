@@ -104,16 +104,28 @@ public class SelectDestinations extends Fragment {
                                 || i == EditorInfo.IME_ACTION_GO || keyEvent.getAction() == KeyEvent.ACTION_DOWN
                                 && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
 
-                            // Send a request for the location
-                            Location destination = mac.buildPlace(textView.getText().toString());
+                            Thread pinThread = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Send a request for the location
+                                    Location destination = mac.buildPlace(textView.getText().toString());
 
-                            // Update the text field with the correct address
-                            newDst.setText(destination.getAddress());
+                                    // Update the text field with the correct address
+                                    newDst.setText(destination.getAddress());
 
-                            // Pin the location on the map
-                            MarkerOptions markerOptions = new MarkerOptions().position(destination.getLocation()).title(destination.getAddress());
-                            MiniMapFragment.minimap.addMarker(markerOptions);
-                            MiniMapFragment.minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getLocation(), 15));
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            // Pin the location on the map
+                                            MarkerOptions markerOptions = new MarkerOptions().position(destination.getLocation()).title(destination.getAddress());
+                                            MiniMapFragment.minimap.addMarker(markerOptions);
+                                            MiniMapFragment.minimap.moveCamera(CameraUpdateFactory.newLatLngZoom(destination.getLocation(), 15));
+                                        }
+                                    });
+
+                                }
+                            });
+                            pinThread.start();
 
                             return true;
                         }
@@ -135,15 +147,13 @@ public class SelectDestinations extends Fragment {
                 // Retrieve all destinations
                 ViewGroup layout = (ViewGroup) view.findViewById(R.id.createRoute);
 
-                Location[] destinationList = new Location[layout.getChildCount()+1];
-                // Users location should be the origin of the route
-                destinationList[0] = new Location("You", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
+                String[] destinationList = new String[layout.getChildCount()];
                 // Loop through each of the views in the layout
                 for (int i = 0; i < layout.getChildCount(); i++) {
                     View view = layout.getChildAt(i);
 
                     if (view instanceof EditText) {
-                        destinationList[i+1] = mac.buildPlace(((EditText) view).getText().toString());
+                        destinationList[i] = ((EditText) view).getText().toString();
                     }
                 }
 
@@ -151,7 +161,6 @@ public class SelectDestinations extends Fragment {
                 shipAndSendRoute(destinationList);
             }
         });
-
 
         // Inflate the layout for this fragment
         return view;
@@ -163,7 +172,7 @@ public class SelectDestinations extends Fragment {
         return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
     }
 
-    private void shipAndSendRoute(Location[] destinations) {
+    private void shipAndSendRoute(String[] destinations) {
         Intent intent = new Intent(getActivity(), MapsActivityController.class);
         intent.putExtra("destinationList", destinations);
         startActivity(intent);
