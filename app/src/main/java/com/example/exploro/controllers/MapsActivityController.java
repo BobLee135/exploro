@@ -41,6 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,14 +61,6 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Build the url with all destinations
-        Parcelable[] pList = getIntent().getParcelableArrayExtra("destinationList");
-        dsts = new Location[pList.length];
-        for (int i = 0; i < pList.length; i++) {
-            dsts[i] = (Location) pList[i];
-        }
-        buildRoute(dsts);
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -90,12 +83,12 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
 
                 // Jump back to main page
                 Activity currentActivity = getSupportFragmentManager().findFragmentById(R.id.miniMap).getActivity();
+                currentActivity.finish();
                 Intent intent = new Intent(currentActivity, ApplicationActivityController.class);
                 startActivity(intent);
             }
         });
     }
-
 
     /**
      * Manipulates the map once available.
@@ -110,8 +103,47 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        Thread apiThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Compute and display the route
+                dsts = getLocationsFromSearch(getIntent().getStringArrayExtra("destinationList"));
+                Location[] completeRoute = new Location[dsts.length+1];
+                completeRoute[0] = new Location("you", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
+                System.arraycopy(dsts, 0, completeRoute, 1, dsts.length); // Append dsts to completeRoute on index 1 and forward
+
+                buildRoute(completeRoute);
+                displayRoute();
+
+                // add markers for each place on the route to visit
+                if (dsts != null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (int i = 0; i < dsts.length; i++) {
+                                MarkerOptions place = new MarkerOptions().position(dsts[i].getLocation()).title(dsts[i].getAddress());
+                                googleMap.addMarker(place);
+                            }
+                        }
+                    });
+
+                }
+            }
+        });
+        apiThread.start();
+
+        if (MyLocationListener.currentLocation != null) {
+            // add users location
+            userLocation = googleMap.addMarker(MyLocationListener.userLocationMarker);
+            // move the camera
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MyLocationListener.currentLocation, 15));
+        }
+
+    }
+
+    private void displayRoute() {
         // Send a request to google directions api for the route
-        Response response = sendRequest(this.URL);
+        Response response = sendRequest(URL);
 
         // Display the route on the map
         try {
@@ -127,25 +159,42 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
             lineOptions.addAll(list);
             lineOptions.width(10);
             lineOptions.color(Color.rgb(241, 131, 131));
-            mMap.addPolyline(lineOptions);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mMap.addPolyline(lineOptions);
+                }
+            });
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
+    }
 
-        if (MyLocationListener.currentLocation != null) {
-            // add markers for each place on the route to visit
-            if (dsts != null) {
-                for (int i = 1; i < dsts.length; i++) {
-                    MarkerOptions place = new MarkerOptions().position(dsts[i].getLocation()).title(dsts[i].getAddress());
-                    googleMap.addMarker(place);
-                }
+    public Location[] getLocationsFromSearch(String[] places) {
+        // Loop over each place and count them using a hashmap
+        HashMap<String, Integer> destinations = new HashMap<String, Integer>();
+        for (int i = 0; i < places.length; i++) {
+            if (destinations.containsKey(places[i])) {
+                destinations.put(places[i], destinations.get(places[i])+1);
+            } else {
+                destinations.put(places[i], 1);
             }
-            // add users location
-            userLocation = googleMap.addMarker(MyLocationListener.userLocationMarker);
-            // move the camera
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(MyLocationListener.currentLocation, 15));
         }
-
+        // If a place isn't unique we need to call buildPlaces
+        Location[] allLocations = new Location[places.length];
+        int index = 0;
+        for (Map.Entry<String, Integer> entry : destinations.entrySet()) {
+            if (entry.getValue() > 1) {
+                Location[] temp = buildPlaces(entry.getKey(), "", entry.getValue());
+                for (int i = 0; i < temp.length; i++) {
+                    allLocations[index++] = temp[i];
+                }
+            } else {
+                allLocations[index++] = buildPlace(entry.getKey());
+            }
+        }
+        // Return an array of unique locations
+        return allLocations;
     }
 
 // "https://maps.googleapis.com/maps/api/directions/json?origin=Toronto&destination=Montreal&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
@@ -206,8 +255,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         url += "query=" + place;
         url += "&location=" + MyLocationListener.currentLocation.latitude + "," + MyLocationListener.currentLocation.longitude;
         url += "&opennow=" + false;
-        url += "&rankby=distance";
-        //url += "&radius=" + 5000;
+        url += "&rankby=distance"; //url += "&radius=" + 5000;
         url += "&type=" + type;
         url += "&key=" + BuildConfig.MAPS_API_KEY;
 
@@ -235,9 +283,6 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
 
     // Returns a response from a request to a url
     public Response sendRequest(String url) {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();
         Request request = new Request.Builder()
