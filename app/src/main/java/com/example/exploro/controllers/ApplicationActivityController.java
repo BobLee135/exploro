@@ -52,17 +52,27 @@ import java.util.concurrent.TimeUnit;
 
 public class ApplicationActivityController extends AppCompatActivity {
 
+    // Objects
     private MapsAPICaller mMapsApiCaller;
     private MessageHelper mMessageHelper;
     private DataObservable mDataObservable;
     private GoogleMap mMap;
     private LocationsBottomSheetBehavior mLocationsBottomSheetBehavior;
-    private DrawerLayout drawerLayout;
-    private float initOffset = -200f;
+
+    // Caches
     private JSONArray placeCache;
+    private JSONArray queryCaches;
+
+    // OnclickListeners
     private View.OnClickListener placeClickListener;
+
+    // Views
+    private DrawerLayout drawerLayout;
     private ScrollView locationsScroll;
     private ScrollView categoriesScroll;
+
+    // Global variables
+    private float initOffset = -200f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +83,9 @@ public class ApplicationActivityController extends AppCompatActivity {
         mMessageHelper = new MessageHelper();
         mMapsApiCaller = new MapsAPICaller();
 
+        // Initialize cache arrays
         placeCache = new JSONArray();
+        queryCaches = new JSONArray();
 
         // Get views
         locationsScroll = findViewById(R.id.allLocationsScrollView);
@@ -554,7 +566,7 @@ public class ApplicationActivityController extends AppCompatActivity {
                     View categoryCard = inflater.inflate(R.layout.location_category_view, holder, false);
                     holder.addView(categoryCard);
                     LinearLayout categoryCardHolder = categoryCard.findViewById(R.id.locationViewHolder);
-                    generatePlaceCards(categories[index].toString(), categories[index], categoryCardHolder, holder, 0);
+                    generatePlaceCards(categories[index].toString(), categories[index], categoryCardHolder, holder, 2);
 
                     // Set card title text
                     TextView categoryTitle = categoryCard.findViewById(R.id.locationsCategoryText0);
@@ -591,7 +603,7 @@ public class ApplicationActivityController extends AppCompatActivity {
                         LinearLayout pairHolder = (LinearLayout) getLayoutInflater().inflate(R.layout.location_pair_holder, viewAllHolder, false);
                         viewAllHolder.addView(pairHolder);
                         if (viewAllHolder != null)
-                            generatePlaceCards(categories[index].toString(), categories[index], pairHolder, viewAllHolder, 0);
+                            generatePlaceCards(categories[index].toString(), categories[index], pairHolder, viewAllHolder, 20);
                     }));
                 }
             };
@@ -629,13 +641,43 @@ public class ApplicationActivityController extends AppCompatActivity {
     private void generatePlaceCards(String query, MapsAPICaller.PlaceTypes type, LinearLayout holder, LinearLayout root, int amount) {
         LayoutInflater layoutInflater = getLayoutInflater();
 
-        // Get places from API
-        JSONArray places = mMapsApiCaller.getPlacesFromQuery(query, false, 2000, type, amount);
+        JSONArray places = null;
 
-        // If places couldn't be retrieved
+        // Check if wanted places are already in cache
+        for (int i = 0; i < queryCaches.length(); i++) {
+            System.out.println("hej fitta");
+            try {
+                if (queryCaches.getJSONObject(i).has(query)) {
+                    System.out.println(queryCaches.getJSONObject(i).getJSONArray(query).length());
+                    if (queryCaches.getJSONObject(i).getJSONArray(query).length() == amount) {
+                        places = queryCaches.getJSONObject(i).getJSONArray(query);
+                        break;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Get places from API if places wasn't already in cache
         if (places == null) {
-            mMessageHelper.displaySnackbar("Couldn't load places from location", 3 , "Error", holder);
-            return;
+            places = mMapsApiCaller.getPlacesFromQuery(query, false, 2000, type, amount);
+            System.out.println("WHYY");
+
+            // If places couldn't be retrieved
+            if (places == null) {
+                mMessageHelper.displaySnackbar("Couldn't load places from location", 3 , "Error", holder);
+                return;
+            }
+
+            // Cache api results
+            JSONObject queryToCache = new JSONObject();
+            try {
+                queryToCache.put(query, places);
+                queryCaches.put(queryToCache);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
 
         // Add location views for each location
