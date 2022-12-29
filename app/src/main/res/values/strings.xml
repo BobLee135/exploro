@@ -35,4 +35,6 @@
     <string name="start_route">Start route</string>
     <string name="close_route">Cancel route</string>
 
+    <string name="close_place_info_text">Close info window</string>
+
 </resources>

@@ -7,15 +7,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.media.Image;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,6 +35,7 @@ import com.example.exploro.LocationsBottomSheetBehavior;
 import com.example.exploro.MapsAPICaller;
 import com.example.exploro.MessageHelper;
 import com.example.exploro.R;
+import com.example.exploro.RunnableWithIndex;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationView;
@@ -38,6 +43,11 @@ import com.google.android.material.navigation.NavigationView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Locale;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ApplicationActivityController extends AppCompatActivity {
 
@@ -48,6 +58,8 @@ public class ApplicationActivityController extends AppCompatActivity {
     private LocationsBottomSheetBehavior mLocationsBottomSheetBehavior;
     public DrawerLayout drawerLayout;
     private float initOffset = -200f;
+    private JSONArray placeCache;
+    private View.OnClickListener placeClickListener;
 
     /**
      * Lerp function
@@ -122,6 +134,8 @@ public class ApplicationActivityController extends AppCompatActivity {
 
         mMessageHelper = new MessageHelper();
         mMapsApiCaller = new MapsAPICaller();
+
+        placeCache = new JSONArray();
 
         View bottomSheet = (View) findViewById(R.id.locationBottomSheet);
         Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
@@ -375,8 +389,163 @@ public class ApplicationActivityController extends AppCompatActivity {
         });
 
 
+        placeClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View place) {
+                TextView placeNameText = place.findViewById(R.id.locationViewTitle);
+                ImageView placeImage = place.findViewById(R.id.locationViewImage);
+                String placeName = placeNameText.getText().toString();
 
-        /* LOADING PLACES FOR BOTTOM SHEET, DISABLED ATM TO REDUCE COST
+                // Get place info
+                JSONObject placeInfo = getPlaceFromCache(placeName);
+                if (placeInfo == null)
+                    return;
+
+                System.out.println(placeInfo.toString());
+
+                System.out.println(placeName + "0");
+
+                // Create dialog to show place info
+                Dialog dialog = new Dialog(ApplicationActivityController.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setCancelable(true);
+                dialog.setContentView(R.layout.place_info_dialog);
+
+                // Get views to change in dialog
+                TextView placeInfoName = (TextView) dialog.findViewById(R.id.placeInfoName);
+                TextView placeInfoAddress = (TextView) dialog.findViewById(R.id.placeInfoAddress);
+                TextView placeInfoHours = (TextView) dialog.findViewById(R.id.placeInfoHours);
+                TextView placeInfoPrice = (TextView) dialog.findViewById(R.id.placeInfoPrice);
+                TextView placeInfoRating = (TextView) dialog.findViewById(R.id.placeInfoRating);
+                TextView placeInfoRatingsNr = (TextView) dialog.findViewById(R.id.placeInfoRatingsNr);
+                TextView placeInfoWebsite = (TextView) dialog.findViewById(R.id.placeInfoWebsite);
+                ImageView placeInfoImage = (ImageView) dialog.findViewById(R.id.placeInfoImage);
+
+                // Cancel button
+                Button closePlaceInfoButton = (Button) dialog.findViewById(R.id.closePlaceInfoButton);
+
+
+                // Set values to view
+                placeInfoName.setText(placeName);
+                placeInfoImage.setImageBitmap(((BitmapDrawable) placeImage.getDrawable()).getBitmap());
+                try {
+                    // Set address
+                    if (placeInfo.has("formatted_address"))
+                        placeInfoAddress.setText("Address: " + placeInfo.getString("formatted_address"));
+
+                    // Set opening hours
+                    if (placeInfo.has("opening_hours")) {
+                        String openHoursText = "Open Hours: ";
+                        JSONObject openHours = placeInfo.getJSONObject("opening_hours");
+                        if (openHours != null) {
+
+                            // Check if place has optional open_now field
+                            if (openHours.has("open_now")) {
+                                if (openHours.getBoolean("open_now"))
+                                    openHoursText += " Currently open!";
+                                else openHoursText += " Not open!";
+                            }
+
+                            // Check if place has optional periods field
+                            if (openHours.has("periods")) {
+                                JSONArray periods = openHours.getJSONArray("periods");
+                                for (int i = 0; i < periods.length(); i++) {
+                                    JSONObject period = periods.getJSONObject(i);
+                                    if (period != null) {
+                                        JSONObject openTime = period.getJSONObject("open");
+                                        int dayNr = openTime.getInt("day");
+                                        String day = "";
+                                        String time = openTime.getString("time");
+
+                                        // Convert dayNr to correct day
+                                        switch (dayNr) {
+                                            case 0:
+                                                day = "Sunday";
+                                                break;
+                                            case 1:
+                                                day = "Monday";
+                                                break;
+                                            case 2:
+                                                day = "Tuesday";
+                                                break;
+                                            case 3:
+                                                day = "Wednesday";
+                                                break;
+                                            case 4:
+                                                day = "Thursday";
+                                                break;
+                                            case 5:
+                                                day = "Friday";
+                                                break;
+                                            case 6:
+                                                day = "Saturday";
+                                                break;
+                                        }
+
+                                        openHoursText += "\n" + day + " " + time;
+                                    }
+
+                                }
+                            }
+                            placeInfoHours.setText(openHoursText);
+                        }
+                    }
+
+                    // Set price level
+                    if (placeInfo.has("price_level")) {
+                        int priceLevel = placeInfo.getInt("price_level"); // Price level integer
+                        String priceLevelFlair = ""; // descriptive text after level
+                        switch (priceLevel) {
+                            case 0:
+                                priceLevelFlair = "Free";
+                                break;
+                            case 1:
+                                priceLevelFlair = "Inexpensive";
+                                break;
+                            case 2:
+                                priceLevelFlair = "Moderate";
+                                break;
+                            case 3:
+                                priceLevelFlair = "Expensive";
+                                break;
+                            case 4:
+                                priceLevelFlair = "Very Expensive";
+                                break;
+                            default:
+                                priceLevelFlair = "Unknown";
+                                break;
+                        }
+
+                        placeInfoPrice.setText("Price Level: " + priceLevel + " " + priceLevelFlair);
+                    }
+
+                    // Set rating
+                    if (placeInfo.has("rating"))
+                        placeInfoRating.setText("Rating: " + placeInfo.getInt("rating") + " / 5");
+
+                    // Set amount of ratings
+                    if (placeInfo.has("user_ratings_total"))
+                        placeInfoRatingsNr.setText("Reviews" + placeInfo.getInt("user_ratings_total"));
+
+                    // Set website url
+                    if (placeInfo.has("website"))
+                        placeInfoWebsite.setText("Website URL:" + placeInfo.getString("website"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                // Handle close button clicked
+                closePlaceInfoButton.setOnClickListener((v -> {
+                    dialog.dismiss();
+                }));
+
+                // Show dialog
+                dialog.show();
+            }
+        };
+
+
+        /* LOADING PLACES FOR BOTTOM SHEET, DISABLED ATM TO REDUCE COST */
         MapsAPICaller.PlaceTypes[] categories = {
             MapsAPICaller.PlaceTypes.RESTAURANT,
             MapsAPICaller.PlaceTypes.MUSEUM,
@@ -402,7 +571,7 @@ public class ApplicationActivityController extends AppCompatActivity {
 
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-        for (int i = 0; i < categories.length; i++) {
+        for (int i = 0; i < 1; i++) {
             // Create new card
             RunnableWithIndex r = new RunnableWithIndex(i) {
                 @Override
@@ -425,7 +594,25 @@ public class ApplicationActivityController extends AppCompatActivity {
             executor.awaitTermination(1, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        } */
+        }
+    }
+
+    /**
+     * Get place json object info from its name
+     * @param placeName - place title name
+     * @return JSONobject with corresponding place info
+     */
+    private JSONObject getPlaceFromCache(String placeName) {
+        for (int i = 0; i < placeCache.length(); i++) {
+            try {
+                JSONObject place = placeCache.getJSONObject(i);
+                if (place.get("name").equals(placeName))
+                    return place;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     /**
@@ -441,7 +628,7 @@ public class ApplicationActivityController extends AppCompatActivity {
         LinearLayout locationViewHolder = categoryCard.findViewById(R.id.locationViewHolder);
 
         // Get places from API
-        JSONArray places = mMapsApiCaller.getPlacesFromQuery(query, false, 2000, type, 2);
+        JSONArray places = mMapsApiCaller.getPlacesFromQuery(query, false, 2000, type, 1);
 
         // If places couldn't be retrieved
         if (places == null) {
@@ -452,7 +639,11 @@ public class ApplicationActivityController extends AppCompatActivity {
         // Add location views for each location
         for (int i  = 0; i < places.length(); i++) {
             try {
+                // Get place and cache it
                 JSONObject place = places.getJSONObject(i);
+                placeCache.put(place);
+
+                // Inflate place view
                 View locationView = layoutInflater.inflate(R.layout.place_view, locationViewHolder, false);
 
                 // remove padding of last item
@@ -464,6 +655,9 @@ public class ApplicationActivityController extends AppCompatActivity {
                 locationTitle.setText(place.getString("name"));
                 locationViewHolder.addView(locationView);
 
+                // Set click listener for view
+                if (placeClickListener != null)
+                    locationView.setOnClickListener(placeClickListener);
 
                 // Get image for place
                 // Check if place has image
@@ -491,7 +685,7 @@ public class ApplicationActivityController extends AppCompatActivity {
                 }
 
                 // Set image
-                ImageView imageView = locationView.findViewById(R.id.locationViewImage0);
+                ImageView imageView = locationView.findViewById(R.id.locationViewImage);
                 imageView.setImageBitmap(imageBitMap);
 
 
