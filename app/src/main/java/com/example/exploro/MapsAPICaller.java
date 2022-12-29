@@ -154,7 +154,7 @@ public class MapsAPICaller {
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
         url += "query=" + query;
         //url += "&location=" + location;
-        url += "&opennow=" + currentlyOpen;
+        //url += "&opennow=" + currentlyOpen;
         url += "&radius=" + radius;
         url += "&type=";
         url += "&key=" + BuildConfig.MAPS_API_KEY;
