@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
@@ -23,6 +22,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.example.exploro.Location;
@@ -45,6 +45,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Locale;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -56,90 +57,31 @@ public class ApplicationActivityController extends AppCompatActivity {
     private DataObservable mDataObservable;
     private GoogleMap mMap;
     private LocationsBottomSheetBehavior mLocationsBottomSheetBehavior;
-    public DrawerLayout drawerLayout;
+    private DrawerLayout drawerLayout;
     private float initOffset = -200f;
     private JSONArray placeCache;
     private View.OnClickListener placeClickListener;
-
-    /**
-     * Lerp function
-     *
-     * @param start - Start value
-     * @param end - Value to end at
-     * @param point - point from 0-1 (start-end ratio)
-     * @return float point value of lerp
-     */
-    private float lerp(float start, float end, float point) {
-        return start + point * (end - start);
-    }
-
-    // Set preplanned routes buttons to the initialized position and alpha values
-    // TODO: CLEANUP
-    private void buttonsInit() {
-        Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
-        Button preplannedButton = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
-        ImageView IVFood = (ImageView) findViewById(R.id.imageViewFood);
-        ImageView IVPub = (ImageView) findViewById(R.id.imageViewPub);
-        ImageView IVPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
-        ImageView IVMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
-        ImageView IVParty = (ImageView) findViewById(R.id.imageViewParty);
-
-        IVFood.setAlpha(0f);
-        IVPub.setAlpha(0f);
-        IVPerfect.setAlpha(0f);
-        IVMustSee.setAlpha(0f);
-        IVParty.setAlpha(0f);
-        preplannedButton.setAlpha(1f);
-
-        IVFood.setTranslationY(initOffset);
-        IVPub.setTranslationY(initOffset);
-        IVPerfect.setTranslationY(initOffset);
-        IVMustSee.setTranslationY(initOffset);
-        IVParty.setTranslationY(initOffset);
-        preplannedButton.setTranslationY(0);
-        createButton.setTranslationY(0);
-    }
-
-    // Set planned routes buttons in the finalized position and alpha values
-    // TODO: CLEANUP
-    private void buttonsFinalState() {
-        Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
-        Button preplannedButton = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
-        ImageView IVFood = (ImageView) findViewById(R.id.imageViewFood);
-        ImageView IVPub = (ImageView) findViewById(R.id.imageViewPub);
-        ImageView IVPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
-        ImageView IVMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
-        ImageView IVParty = (ImageView) findViewById(R.id.imageViewParty);
-
-        IVFood.setAlpha(1f);
-        IVPub.setAlpha(1f);
-        IVPerfect.setAlpha(1f);
-        IVMustSee.setAlpha(1f);
-        IVParty.setAlpha(1f);
-        preplannedButton.setAlpha(0f);
-
-        IVFood.setTranslationY(0f);
-        IVPub.setTranslationY(0f);
-        IVPerfect.setTranslationY(0f);
-        IVMustSee.setTranslationY(0f);
-        IVParty.setTranslationY(0f);
-
-        createButton.setTranslationY(1340f);
-    }
+    private ScrollView locationsScroll;
+    private ScrollView categoriesScroll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_application);
 
+        // Get components
         mMessageHelper = new MessageHelper();
         mMapsApiCaller = new MapsAPICaller();
 
         placeCache = new JSONArray();
 
+        // Get views
+        locationsScroll = findViewById(R.id.allLocationsScrollView);
+        categoriesScroll = findViewById(R.id.allCategoriesView);
         View bottomSheet = (View) findViewById(R.id.locationBottomSheet);
         Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
         Button preplannedButton = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
+        Button viewAllBackButton = (Button) findViewById(R.id.viewAllBackButton);
         ImageView IVFood = (ImageView) findViewById(R.id.imageViewFood);
         ImageView IVPub = (ImageView) findViewById(R.id.imageViewPub);
         ImageView IVPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
@@ -205,6 +147,14 @@ public class ApplicationActivityController extends AppCompatActivity {
             }
         });
 
+        viewAllBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("HEJSAN BITCH");
+                exitViewAllMode();
+            }
+        });
+
         drawerLayout = findViewById(R.id.my_drawer_layout);
         Button drawerToggle = (Button) findViewById(R.id.sideNavBarToggle);
         drawerToggle.setOnClickListener(new View.OnClickListener() {
@@ -251,8 +201,7 @@ public class ApplicationActivityController extends AppCompatActivity {
 
 
         // See pre planned routes button
-        Button prePlanned = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
-        prePlanned.setOnClickListener(new View.OnClickListener() {
+        preplannedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 buttonsFinalState();
@@ -262,8 +211,7 @@ public class ApplicationActivityController extends AppCompatActivity {
         });
 
         // Create my own route button
-        Button myButton = (Button) findViewById(R.id.createOwnRouteBtn);
-        myButton.setOnClickListener(new View.OnClickListener() {
+        createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.INVISIBLE);
@@ -393,151 +341,20 @@ public class ApplicationActivityController extends AppCompatActivity {
                 if (placeInfo == null)
                     return;
 
-                System.out.println(placeInfo.toString());
+                // Create dialog window
+                Dialog dialog = createDialogWindowForPlace(placeInfo, placeName, placeImage);
+                if (dialog == null)
+                    return;
 
-                System.out.println(placeName + "0");
-
-                // Create dialog to show place info
-                Dialog dialog = new Dialog(ApplicationActivityController.this);
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setCancelable(true);
-                dialog.setContentView(R.layout.place_info_dialog);
-
-                // Get views to change in dialog
-                TextView placeInfoName = (TextView) dialog.findViewById(R.id.placeInfoName);
-                TextView placeInfoAddress = (TextView) dialog.findViewById(R.id.placeInfoAddress);
-                TextView placeInfoHours = (TextView) dialog.findViewById(R.id.placeInfoHours);
-                TextView placeInfoPrice = (TextView) dialog.findViewById(R.id.placeInfoPrice);
-                TextView placeInfoRating = (TextView) dialog.findViewById(R.id.placeInfoRating);
-                TextView placeInfoRatingsNr = (TextView) dialog.findViewById(R.id.placeInfoRatingsNr);
-                TextView placeInfoWebsite = (TextView) dialog.findViewById(R.id.placeInfoWebsite);
-                ImageView placeInfoImage = (ImageView) dialog.findViewById(R.id.placeInfoImage);
-
-                // Cancel button
-                Button closePlaceInfoButton = (Button) dialog.findViewById(R.id.closePlaceInfoButton);
-
-
-                // Set values to view
-                placeInfoName.setText(placeName);
-                placeInfoImage.setImageBitmap(((BitmapDrawable) placeImage.getDrawable()).getBitmap());
-                try {
-                    // Set address
-                    if (placeInfo.has("formatted_address"))
-                        placeInfoAddress.setText("Address: " + placeInfo.getString("formatted_address"));
-
-                    // Set opening hours
-                    if (placeInfo.has("opening_hours")) {
-                        String openHoursText = "Open Hours: ";
-                        JSONObject openHours = placeInfo.getJSONObject("opening_hours");
-                        if (openHours != null) {
-
-                            // Check if place has optional open_now field
-                            if (openHours.has("open_now")) {
-                                if (openHours.getBoolean("open_now"))
-                                    openHoursText += " Currently open!";
-                                else openHoursText += " Not open!";
-                            }
-
-                            // Check if place has optional periods field
-                            if (openHours.has("periods")) {
-                                JSONArray periods = openHours.getJSONArray("periods");
-                                for (int i = 0; i < periods.length(); i++) {
-                                    JSONObject period = periods.getJSONObject(i);
-                                    if (period != null) {
-                                        JSONObject openTime = period.getJSONObject("open");
-                                        int dayNr = openTime.getInt("day");
-                                        String day = "";
-                                        String time = openTime.getString("time");
-
-                                        // Convert dayNr to correct day
-                                        switch (dayNr) {
-                                            case 0:
-                                                day = "Sunday";
-                                                break;
-                                            case 1:
-                                                day = "Monday";
-                                                break;
-                                            case 2:
-                                                day = "Tuesday";
-                                                break;
-                                            case 3:
-                                                day = "Wednesday";
-                                                break;
-                                            case 4:
-                                                day = "Thursday";
-                                                break;
-                                            case 5:
-                                                day = "Friday";
-                                                break;
-                                            case 6:
-                                                day = "Saturday";
-                                                break;
-                                        }
-
-                                        openHoursText += "\n" + day + " " + time;
-                                    }
-
-                                }
-                            }
-                            placeInfoHours.setText(openHoursText);
-                        }
-                    }
-
-                    // Set price level
-                    if (placeInfo.has("price_level")) {
-                        int priceLevel = placeInfo.getInt("price_level"); // Price level integer
-                        String priceLevelFlair = ""; // descriptive text after level
-                        switch (priceLevel) {
-                            case 0:
-                                priceLevelFlair = "Free";
-                                break;
-                            case 1:
-                                priceLevelFlair = "Inexpensive";
-                                break;
-                            case 2:
-                                priceLevelFlair = "Moderate";
-                                break;
-                            case 3:
-                                priceLevelFlair = "Expensive";
-                                break;
-                            case 4:
-                                priceLevelFlair = "Very Expensive";
-                                break;
-                            default:
-                                priceLevelFlair = "Unknown";
-                                break;
-                        }
-
-                        placeInfoPrice.setText("Price Level: " + priceLevel + " " + priceLevelFlair);
-                    }
-
-                    // Set rating
-                    if (placeInfo.has("rating"))
-                        placeInfoRating.setText("Rating: " + placeInfo.getInt("rating") + " / 5");
-
-                    // Set amount of ratings
-                    if (placeInfo.has("user_ratings_total"))
-                        placeInfoRatingsNr.setText("Reviews" + placeInfo.getInt("user_ratings_total"));
-
-                    // Set website url
-                    if (placeInfo.has("website"))
-                        placeInfoWebsite.setText("Website URL:" + placeInfo.getString("website"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                // Handle close button clicked
-                closePlaceInfoButton.setOnClickListener((v -> {
-                    dialog.dismiss();
-                }));
-
-                // Show dialog
                 dialog.show();
             }
         };
 
+        /**
+         * GENERATE BOTTOM SHEET CONTENT
+         */
 
-        /* LOADING PLACES FOR BOTTOM SHEET, DISABLED ATM TO REDUCE COST */
+        // Categories to create for bottom sheet
         MapsAPICaller.PlaceTypes[] categories = {
             MapsAPICaller.PlaceTypes.RESTAURANT,
             MapsAPICaller.PlaceTypes.MUSEUM,
@@ -548,39 +365,24 @@ public class ApplicationActivityController extends AppCompatActivity {
             MapsAPICaller.PlaceTypes.AMUSEMENT_PARK
         };
 
+        // Set thread policy to strict mode
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        // Create array of threads
         int numThreads = 16;
         Thread[] threads = new Thread[numThreads];
         for (int i = 0; i < threads.length; i++) {
             threads[i] = new Thread();
         }
 
-
+        // Get necessary components to generate category cards
         LayoutInflater layoutInflater = getLayoutInflater();
         LinearLayout categoryHolder = findViewById(R.id.locationCategoryHolder);
-
         ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
-        for (int i = 0; i < 1; i++) {
-            // Create new card
-            RunnableWithIndex r = new RunnableWithIndex(i) {
-                @Override
-                public void run() {
-                    View categoryCard = layoutInflater.inflate(R.layout.location_category_view, categoryHolder, false);
-                    categoryHolder.addView(categoryCard);
-                    createCardViewsForCategoryView(categories[index].toString(), categories[index], categoryCard);
-
-                    // Set card title text
-                    TextView categoryTitle = categoryCard.findViewById(R.id.locationsCategoryText0);
-                    String title = categories[index].toString();
-                    title = title.substring(0, 1).toUpperCase(Locale.ROOT) + title.substring(1);
-                    categoryTitle.setText(title);
-                }
-            };
-            executor.execute(r);
-        }
+        // Execute
+        generateCategoryCardsWithContent(executor, categories, categoryHolder, layoutInflater);
         executor.shutdown();
         try {
             executor.awaitTermination(1, TimeUnit.MINUTES);
@@ -590,7 +392,217 @@ public class ApplicationActivityController extends AppCompatActivity {
     }
 
     /**
-     * Get place json object info from its name
+     * Create dialog window full of information about a place
+     *
+     * @param placeInfo - JSONObject with google maps text search of place response
+     * @param placeName - specific place name
+     * @param placeImage - specific place image
+     * @return the dialog window created
+     */
+    private Dialog createDialogWindowForPlace(JSONObject placeInfo, String placeName, ImageView placeImage) {
+
+        // Create dialog to show place info
+        Dialog dialog = new Dialog(ApplicationActivityController.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.place_info_dialog);
+
+        // Get views to change in dialog
+        TextView placeInfoName = (TextView) dialog.findViewById(R.id.placeInfoName);
+        TextView placeInfoAddress = (TextView) dialog.findViewById(R.id.placeInfoAddress);
+        TextView placeInfoHours = (TextView) dialog.findViewById(R.id.placeInfoHours);
+        TextView placeInfoPrice = (TextView) dialog.findViewById(R.id.placeInfoPrice);
+        TextView placeInfoRating = (TextView) dialog.findViewById(R.id.placeInfoRating);
+        TextView placeInfoRatingsNr = (TextView) dialog.findViewById(R.id.placeInfoRatingsNr);
+        TextView placeInfoWebsite = (TextView) dialog.findViewById(R.id.placeInfoWebsite);
+        ImageView placeInfoImage = (ImageView) dialog.findViewById(R.id.placeInfoImage);
+
+        // Cancel button
+        Button closePlaceInfoButton = (Button) dialog.findViewById(R.id.closePlaceInfoButton);
+
+        // Set values to view
+        placeInfoName.setText(placeName);
+        placeInfoImage.setImageBitmap(((BitmapDrawable) placeImage.getDrawable()).getBitmap());
+        try {
+            // Set address
+            if (placeInfo.has("formatted_address"))
+                placeInfoAddress.setText("Address: " + placeInfo.getString("formatted_address"));
+
+            // Set opening hours
+            if (placeInfo.has("opening_hours")) {
+                String openHoursText = "Open Hours: ";
+                JSONObject openHours = placeInfo.getJSONObject("opening_hours");
+                if (openHours != null) {
+
+                    // Check if place has optional open_now field
+                    if (openHours.has("open_now")) {
+                        if (openHours.getBoolean("open_now"))
+                            openHoursText += " Currently open!";
+                        else openHoursText += " Not open!";
+                    }
+
+                    // Check if place has optional periods field
+                    if (openHours.has("periods")) {
+                        JSONArray periods = openHours.getJSONArray("periods");
+                        for (int i = 0; i < periods.length(); i++) {
+                            JSONObject period = periods.getJSONObject(i);
+                            if (period != null) {
+                                JSONObject openTime = period.getJSONObject("open");
+                                int dayNr = openTime.getInt("day");
+                                String day = "";
+                                String time = openTime.getString("time");
+
+                                // Convert dayNr to correct day
+                                switch (dayNr) {
+                                    case 0:
+                                        day = "Sunday";
+                                        break;
+                                    case 1:
+                                        day = "Monday";
+                                        break;
+                                    case 2:
+                                        day = "Tuesday";
+                                        break;
+                                    case 3:
+                                        day = "Wednesday";
+                                        break;
+                                    case 4:
+                                        day = "Thursday";
+                                        break;
+                                    case 5:
+                                        day = "Friday";
+                                        break;
+                                    case 6:
+                                        day = "Saturday";
+                                        break;
+                                }
+
+                                openHoursText += "\n" + day + " " + time;
+                            }
+
+                        }
+                    }
+                    placeInfoHours.setText(openHoursText);
+                }
+            }
+
+            // Set price level
+            if (placeInfo.has("price_level")) {
+                int priceLevel = placeInfo.getInt("price_level"); // Price level integer
+                String priceLevelFlair = ""; // descriptive text after level
+                switch (priceLevel) {
+                    case 0:
+                        priceLevelFlair = "Free";
+                        break;
+                    case 1:
+                        priceLevelFlair = "Inexpensive";
+                        break;
+                    case 2:
+                        priceLevelFlair = "Moderate";
+                        break;
+                    case 3:
+                        priceLevelFlair = "Expensive";
+                        break;
+                    case 4:
+                        priceLevelFlair = "Very Expensive";
+                        break;
+                    default:
+                        priceLevelFlair = "Unknown";
+                        break;
+                }
+
+                placeInfoPrice.setText("Price Level: " + priceLevel + " " + priceLevelFlair);
+            }
+
+            // Set rating
+            if (placeInfo.has("rating"))
+                placeInfoRating.setText("Rating: " + placeInfo.getInt("rating") + " / 5");
+
+            // Set amount of ratings
+            if (placeInfo.has("user_ratings_total"))
+                placeInfoRatingsNr.setText("Reviews: " + placeInfo.getInt("user_ratings_total"));
+
+            // Set website url
+            if (placeInfo.has("website"))
+                placeInfoWebsite.setText("Website URL:" + placeInfo.getString("website"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Handle close button clicked
+        closePlaceInfoButton.setOnClickListener((v -> {
+            dialog.dismiss();
+        }));
+
+        return dialog;
+    }
+
+    /**
+     * Generate category cards filled with place cards as content
+     *
+     * @param executor - Executor service to run threads
+     * @param categories - categories array to go from
+     * @param holder - Layout to hold category cards
+     * @param inflater - Layout inflater
+     */
+    private void generateCategoryCardsWithContent(Executor executor, MapsAPICaller.PlaceTypes[] categories, LinearLayout holder, LayoutInflater inflater) {
+        for (int i = 0; i < categories.length; i++) {
+            // Create new card
+            RunnableWithIndex r = new RunnableWithIndex(i) {
+                @Override
+                public void run() {
+                    View categoryCard = inflater.inflate(R.layout.location_category_view, holder, false);
+                    holder.addView(categoryCard);
+                    LinearLayout categoryCardHolder = categoryCard.findViewById(R.id.locationViewHolder);
+                    generatePlaceCards(categories[index].toString(), categories[index], categoryCardHolder, holder, 0);
+
+                    // Set card title text
+                    TextView categoryTitle = categoryCard.findViewById(R.id.locationsCategoryText0);
+
+                    // Remove underscore '_' (if it exists in title)
+                    char[] tempTitle = categories[index].toString().toCharArray();
+                    for (int c = 0; c < tempTitle.length; c++) {
+                        if (tempTitle[c] == '_')
+                            tempTitle[c] = ' ';
+                    }
+
+                    String title = new String(tempTitle);
+                    title = title.substring(0, 1).toUpperCase(Locale.ROOT) + title.substring(1);
+                    categoryTitle.setText(title);
+
+                    // Set click listener for view all button
+                    View viewAll = categoryCard.findViewById(R.id.viewAllText0);
+                    viewAll.setOnClickListener((v -> {
+                        locationsScroll.setVisibility(View.VISIBLE);
+                        categoriesScroll.setVisibility(View.INVISIBLE);
+                        findViewById(R.id.viewAllBackButton).setVisibility(View.VISIBLE);
+                        LinearLayout viewAllHolder = locationsScroll.findViewById(R.id.categoryPlaceViewHolder);
+                        TextView headerTitle = (TextView) viewAllHolder.findViewById(R.id.categoryTitleText);
+                        headerTitle.setText("Top " + categoryTitle.getText() + "s");
+
+                        // Clear up view from previous uses
+                        for (int i = 0; i < viewAllHolder.getChildCount(); i++) {
+                            if (viewAllHolder.getChildAt(i) == headerTitle)
+                                continue;
+                            viewAllHolder.removeViewAt(i);
+                        }
+
+                        // Generate new views
+                        LinearLayout pairHolder = (LinearLayout) getLayoutInflater().inflate(R.layout.location_pair_holder, viewAllHolder, false);
+                        viewAllHolder.addView(pairHolder);
+                        if (viewAllHolder != null)
+                            generatePlaceCards(categories[index].toString(), categories[index], pairHolder, viewAllHolder, 0);
+                    }));
+                }
+            };
+            executor.execute(r);
+        }
+    }
+
+
+
+    /**
+     * Get place json object info from its name in cache
      * @param placeName - place title name
      * @return JSONobject with corresponding place info
      */
@@ -608,23 +620,21 @@ public class ApplicationActivityController extends AppCompatActivity {
     }
 
     /**
-     * Get the top two places for specified category and create card view with place info and image
-     * in bottom sheet menu
+     * Get a specified amount of the top places for a specified category and create place card views for a holder
      *
      * @param query - Search string query
      * @param type - category type
-     * @param categoryCard - Which category card to create new location views in
+     * @param holder - Which category card to create new location views in
      */
-    private void createCardViewsForCategoryView(String query, MapsAPICaller.PlaceTypes type, View categoryCard) {
+    private void generatePlaceCards(String query, MapsAPICaller.PlaceTypes type, LinearLayout holder, LinearLayout root, int amount) {
         LayoutInflater layoutInflater = getLayoutInflater();
-        LinearLayout locationViewHolder = categoryCard.findViewById(R.id.locationViewHolder);
 
         // Get places from API
-        JSONArray places = mMapsApiCaller.getPlacesFromQuery(query, false, 2000, type, 1);
+        JSONArray places = mMapsApiCaller.getPlacesFromQuery(query, false, 2000, type, amount);
 
         // If places couldn't be retrieved
         if (places == null) {
-            mMessageHelper.displaySnackbar("Couldn't load places from location", 3 , "Error", locationViewHolder);
+            mMessageHelper.displaySnackbar("Couldn't load places from location", 3 , "Error", holder);
             return;
         }
 
@@ -636,16 +646,23 @@ public class ApplicationActivityController extends AppCompatActivity {
                 placeCache.put(place);
 
                 // Inflate place view
-                View locationView = layoutInflater.inflate(R.layout.place_view, locationViewHolder, false);
+                View locationView = layoutInflater.inflate(R.layout.place_view, holder, false);
 
                 // remove padding of last item
-                if (i == places.length() - 1)
-                    locationView.setPadding(0,0,0,0);
+                /*if (i == places.length() - 1)
+                    locationView.setPadding(0,0,0,0);*/
 
                 // Create the view
                 TextView locationTitle = locationView.findViewById(R.id.locationViewTitle);
                 locationTitle.setText(place.getString("name"));
-                locationViewHolder.addView(locationView);
+                holder.addView(locationView);
+
+                // Add a new horizontal holder for every two places
+                if (i % 2 == 1 && amount > 2) {
+                    LinearLayout newHolder = (LinearLayout) layoutInflater.inflate(R.layout.location_pair_holder, root, false);
+                    root.addView(newHolder);
+                    holder = newHolder;
+                }
 
                 // Set click listener for view
                 if (placeClickListener != null)
@@ -654,7 +671,7 @@ public class ApplicationActivityController extends AppCompatActivity {
                 // Get image for place
                 // Check if place has image
                 if (!place.has("photos")) {
-                    mMessageHelper.displaySnackbar("Couldn't load photos array from location", 3 , "Error", locationViewHolder);
+                    Log.e("Warning", "Couldn't load photos array from location");
                     continue;
                 }
 
@@ -665,7 +682,7 @@ public class ApplicationActivityController extends AppCompatActivity {
                 String photoRef = place.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
                 byte[] imageUrl = mMapsApiCaller.getImageURLFromPhotoReference(photoRef, (int)(150 * scale + 0.5f), (int) (110 * scale + 0.5f));
                 if (imageUrl == null) {
-                    mMessageHelper.displaySnackbar("Couldn't load photo for location", 3 , "Error", locationViewHolder);
+                    Log.e("Warning", "Couldn't load photo for location");
                     continue;
                 }
 
@@ -680,7 +697,6 @@ public class ApplicationActivityController extends AppCompatActivity {
                 ImageView imageView = locationView.findViewById(R.id.locationViewImage);
                 imageView.setImageBitmap(imageBitMap);
 
-
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -691,8 +707,21 @@ public class ApplicationActivityController extends AppCompatActivity {
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START))
             drawerLayout.closeDrawer(GravityCompat.START);
-        else
-            super.onBackPressed();
+        else {
+            if (locationsScroll.getVisibility() == View.VISIBLE)
+                exitViewAllMode();
+            else
+                super.onBackPressed();
+        }
+    }
+
+    /**
+     * Exit view all mode, change visibilities and delete content
+     */
+    private void exitViewAllMode() {
+        locationsScroll.setVisibility(View.INVISIBLE);
+        categoriesScroll.setVisibility(View.VISIBLE);
+        findViewById(R.id.viewAllBackButton).setVisibility(View.INVISIBLE);
     }
 
     private void shipAndSendRoute(Location[] destinations) {
@@ -700,4 +729,71 @@ public class ApplicationActivityController extends AppCompatActivity {
         intent.putExtra("destinationList", destinations);
         startActivity(intent);
     }
+
+    /**
+     * Lerp function
+     *
+     * @param start - Start value
+     * @param end - Value to end at
+     * @param point - point from 0-1 (start-end ratio)
+     * @return float point value of lerp
+     */
+    private float lerp(float start, float end, float point) {
+        return start + point * (end - start);
+    }
+
+    // Set preplanned routes buttons to the initialized position and alpha values
+    // TODO: CLEANUP
+    private void buttonsInit() {
+        Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
+        Button preplannedButton = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
+        ImageView IVFood = (ImageView) findViewById(R.id.imageViewFood);
+        ImageView IVPub = (ImageView) findViewById(R.id.imageViewPub);
+        ImageView IVPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
+        ImageView IVMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
+        ImageView IVParty = (ImageView) findViewById(R.id.imageViewParty);
+
+        IVFood.setAlpha(0f);
+        IVPub.setAlpha(0f);
+        IVPerfect.setAlpha(0f);
+        IVMustSee.setAlpha(0f);
+        IVParty.setAlpha(0f);
+        preplannedButton.setAlpha(1f);
+
+        IVFood.setTranslationY(initOffset);
+        IVPub.setTranslationY(initOffset);
+        IVPerfect.setTranslationY(initOffset);
+        IVMustSee.setTranslationY(initOffset);
+        IVParty.setTranslationY(initOffset);
+        preplannedButton.setTranslationY(0);
+        createButton.setTranslationY(0);
+    }
+
+    // Set planned routes buttons in the finalized position and alpha values
+    // TODO: CLEANUP
+    private void buttonsFinalState() {
+        Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
+        Button preplannedButton = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
+        ImageView IVFood = (ImageView) findViewById(R.id.imageViewFood);
+        ImageView IVPub = (ImageView) findViewById(R.id.imageViewPub);
+        ImageView IVPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
+        ImageView IVMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
+        ImageView IVParty = (ImageView) findViewById(R.id.imageViewParty);
+
+        IVFood.setAlpha(1f);
+        IVPub.setAlpha(1f);
+        IVPerfect.setAlpha(1f);
+        IVMustSee.setAlpha(1f);
+        IVParty.setAlpha(1f);
+        preplannedButton.setAlpha(0f);
+
+        IVFood.setTranslationY(0f);
+        IVPub.setTranslationY(0f);
+        IVPerfect.setTranslationY(0f);
+        IVMustSee.setTranslationY(0f);
+        IVParty.setTranslationY(0f);
+
+        createButton.setTranslationY(1340f);
+    }
 }
+
