@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -20,6 +21,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -42,6 +44,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import okhttp3.Response;
 
@@ -49,6 +52,7 @@ public class SelectDestinations extends Fragment {
 
     private int currentNumberOfDestinations;
     private int maxNumberOfDestinations = 10; // (no more than 24) google maps api allows for origin + 23 waypoints + destination in a route
+    private ArrayList<Location> currentlySelectedLocations = new ArrayList<Location>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +88,15 @@ public class SelectDestinations extends Fragment {
                     add.setTextColor(Color.parseColor("#808080"));
                 }
 
+                // Create a layout to add the inputs to
+                LinearLayout fieldLayout = new LinearLayout(getActivity());
+                fieldLayout.setOrientation(LinearLayout.HORIZONTAL);
+                LinearLayout.LayoutParams fieldParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                fieldLayout.setLayoutParams(fieldParams);
+
                 // Create a new input field
                 EditText newDst = new EditText(getActivity());
                 newDst.setHint("Route Destination");
@@ -92,10 +105,14 @@ public class SelectDestinations extends Fragment {
                 newDst.setHintTextColor(ContextCompat.getColor(getActivity(), R.color.text_red_half_transparent));
                 newDst.setSingleLine(true);
                 newDst.setPadding(dpToPx(10), 0, 0, 0);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dpToPx(320), dpToPx(50));
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                        dpToPx(320),
+                        dpToPx(50)
+                );
                 params.setMargins(dpToPx(20), 0, 0, dpToPx(4));
                 newDst.setLayoutParams(params);
 
+                // Add a listener to the button
                 // When enter is pressed or the user leaves the text input we add a market of the location on the map
                 newDst.setOnEditorActionListener(new EditText.OnEditorActionListener() {
                     @Override
@@ -109,6 +126,8 @@ public class SelectDestinations extends Fragment {
                                 public void run() {
                                     // Send a request for the location
                                     Location destination = mac.buildPlace(textView.getText().toString());
+                                    // Update the list of selected locations
+                                    currentlySelectedLocations.add(destination);
 
                                     // Update the text field with the correct address
                                     newDst.setText(destination.getAddress());
@@ -132,10 +151,41 @@ public class SelectDestinations extends Fragment {
                         return false;
                     }
                 });
+                fieldLayout.addView(newDst); // Add the text input to the layout
 
-                // Add the new input field to the layout
-                LinearLayout myLayout = (LinearLayout)view.findViewById(R.id.createRoute);
-                myLayout.addView(newDst);
+                // Create a delete button
+                Button deleteBtn = new Button(getActivity());
+                deleteBtn.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.delete));
+                LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
+                        dpToPx(30),
+                        dpToPx(30)
+                );
+                deleteBtn.setLayoutParams(btnParams);
+                deleteBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // When button is pressed, the entire field and button should be removed
+                        ViewGroup parentView = (ViewGroup) view.getParent().getParent();
+                        parentView.removeView((ViewGroup) view.getParent());
+
+                        // Update the list of selected locations
+                        String address = ((TextView)((ViewGroup)view.getParent()).getChildAt(0)).getText().toString();
+                        for (int i = 0; i < currentlySelectedLocations.size(); i++) {
+                            if (address.compareTo(currentlySelectedLocations.get(i).getAddress()) == 0) {
+                                currentlySelectedLocations.remove(i);
+                                break;
+                            }
+                        }
+
+                        // Remove the old marker on the map
+                        updateMapMarkers();
+                    }
+                });
+                fieldLayout.addView(deleteBtn); // Add the button to the layout
+
+                // Add the new input and delete button field to the layout
+                LinearLayout myLayout = (LinearLayout) view.findViewById(R.id.createRoute);
+                myLayout.addView(fieldLayout);
             }
         });
 
@@ -145,25 +195,30 @@ public class SelectDestinations extends Fragment {
         create.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Retrieve all destinations
-                ViewGroup layout = (ViewGroup) view.findViewById(R.id.createRoute);
-
-                String[] destinationList = new String[layout.getChildCount()];
-                // Loop through each of the views in the layout
-                for (int i = 0; i < layout.getChildCount(); i++) {
-                    View view = layout.getChildAt(i);
-
-                    if (view instanceof EditText) {
-                        destinationList[i] = ((EditText) view).getText().toString();
-                    }
+                String[] destinationList = new String[currentlySelectedLocations.size()];
+                for (int i = 0; i < currentlySelectedLocations.size(); i++) {
+                    destinationList[i] = currentlySelectedLocations.get(i).getAddress();
                 }
-
-                // Add all destinations as a bundle and send to the new activity
                 shipAndSendRoute(destinationList);
             }
         });
 
         // Inflate the layout for this fragment
         return view;
+    }
+
+    // Method to update all of the markers on the map (from the input fields)
+    public void updateMapMarkers() {
+        // Remove all markers
+        MiniMapFragment.minimap.clear();
+        // Add user location marker
+        MiniMapFragment.minimap.addMarker(MyLocationListener.userLocationMarker);
+        // Add destination markers
+        for (int i = 0; i < currentlySelectedLocations.size(); i++) {
+            Location current = currentlySelectedLocations.get(i);
+            MarkerOptions markerOptions = new MarkerOptions().position(current.getLocation()).title(current.getAddress());
+            MiniMapFragment.minimap.addMarker(markerOptions);
+        }
     }
 
     // Method to convert dp to pixels
