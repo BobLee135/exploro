@@ -567,7 +567,7 @@ public class ApplicationActivityController extends AppCompatActivity {
                     View categoryCard = inflater.inflate(R.layout.location_category_view, holder, false);
                     holder.addView(categoryCard);
                     LinearLayout categoryCardHolder = categoryCard.findViewById(R.id.locationViewHolder);
-                    JSONArray pairPlaces = getPlaces(categories[index].toString(), categories[index], 2);
+                    JSONArray pairPlaces = getPlaces(categories[index].toString(), categories[index], 0);
                     generatePlaceCards(pairPlaces, categoryCardHolder, holder);
 
                     // Set card title text
@@ -610,7 +610,7 @@ public class ApplicationActivityController extends AppCompatActivity {
                         LinearLayout pairHolder = (LinearLayout) getLayoutInflater().inflate(R.layout.location_pair_holder, viewAllHolder, false);
                         viewAllHolder.addView(pairHolder);
                         if (viewAllHolder != null) {
-                            JSONArray places = getPlaces(categories[index].toString(), categories[index], 20);
+                            JSONArray places = getPlaces(categories[index].toString(), categories[index], 0);
                             generatePlaceCards(places, pairHolder, viewAllHolder);
                         }
                     }));
@@ -645,7 +645,6 @@ public class ApplicationActivityController extends AppCompatActivity {
 
         // Check if wanted places are already in cache
         for (int i = 0; i < queryCaches.length(); i++) {
-            System.out.println("hej fitta");
             try {
                 if (queryCaches.getJSONObject(i).has(query)) {
                     System.out.println(queryCaches.getJSONObject(i).getJSONArray(query).length());
@@ -663,7 +662,6 @@ public class ApplicationActivityController extends AppCompatActivity {
         // Get places from API if places wasn't already in cache
         if (places == null) {
             places = mMapsApiCaller.getPlacesFromQuery(query, false, 2000, type, amount);
-            System.out.println("WHYY");
 
             // If places couldn't be retrieved
             if (places == null) {
