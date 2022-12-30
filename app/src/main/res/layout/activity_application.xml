@@ -59,6 +59,7 @@
                     android:layout_width="280dp"
                     android:layout_height="80dp"
                     android:layout_marginBottom="10dp"
+                    android:alpha="1"
                     android:elevation="5dp"
                     android:src="@drawable/food"
                     app:cornerRadius="10dp" />
@@ -85,6 +86,7 @@
                     android:layout_width="280dp"
                     android:layout_height="80dp"
                     android:layout_marginBottom="10dp"
+                    android:alpha="1"
                     android:elevation="5dp"
                     android:src="@drawable/pub"
                     app:cornerRadius="10dp" />
@@ -111,6 +113,7 @@
                     android:layout_width="280dp"
                     android:layout_height="80dp"
                     android:layout_marginBottom="10dp"
+                    android:alpha="1"
                     android:elevation="5dp"
                     android:src="@drawable/mustsee"
                     app:cornerRadius="10dp" />
@@ -137,6 +140,7 @@
                     android:layout_width="280dp"
                     android:layout_height="80dp"
                     android:layout_marginBottom="10dp"
+                    android:alpha="1"
                     android:elevation="5dp"
                     android:src="@drawable/party"
                     app:cornerRadius="10dp" />
@@ -163,6 +167,7 @@
                     android:layout_width="280dp"
                     android:layout_height="80dp"
                     android:layout_marginBottom="10dp"
+                    android:alpha="1"
                     android:elevation="5dp"
                     android:src="@drawable/wine"
                     app:cornerRadius="10dp" />
