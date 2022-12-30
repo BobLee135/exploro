@@ -20,17 +20,46 @@
             tools:layout="@layout/fragment_mini_map" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/createRoute"
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="16dp">
+        android:layout_height="280dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-    </LinearLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-    <LinearLayout
+            <LinearLayout
+                android:id="@+id/createRoute"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/addDestination"
+                android:layout_width="260dp"
+                android:layout_height="48dp"
+                android:layout_below="@+id/createRoute"
+                android:layout_marginLeft="20dp"
+                android:backgroundTint="@color/white_shade_1"
+                android:elevation="5dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:stateListAnimator="@null"
+                android:text="@string/add_destination"
+                android:textColor="@color/red_shade_2"
+                app:cornerRadius="10dp"
+                tools:ignore="TextContrastCheck" />
+        </RelativeLayout>
+    </ScrollView>
+
+
+
+    <RelativeLayout
         android:id="@+id/routeSettings"
         android:layout_width="match_parent"
         android:layout_height="70dp"
@@ -39,30 +68,12 @@
         app:layout_constraintBottom_toBottomOf="parent" >
 
         <Button
-            android:id="@+id/addDestination"
-            android:layout_width="180dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="20dp"
-            android:backgroundTint="@color/white_shade_1"
-            android:elevation="5dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:stateListAnimator="@null"
-            android:text="@string/add_destination"
-            android:textColor="@color/red_shade_2"
-            app:cornerRadius="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/seePrePlannedRoutesBtn"
-            tools:ignore="TextContrastCheck" />
-
-        <Button
             android:id="@+id/createOwnRoute"
             android:layout_width="180dp"
             android:layout_height="48dp"
-            android:layout_marginTop="5dp"
+            android:layout_centerInParent="true"
             android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
             android:backgroundTint="@color/green_shade_1"
             android:elevation="5dp"
             android:insetTop="0dp"
@@ -73,7 +84,7 @@
             app:cornerRadius="10dp"
             tools:ignore="TextContrastCheck" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
