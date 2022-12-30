@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -95,11 +96,18 @@ public class ApplicationActivityController extends AppCompatActivity {
         Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
         Button preplannedButton = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
         Button viewAllBackButton = (Button) findViewById(R.id.viewAllBackButton);
+        /*
         ImageView IVFood = (ImageView) findViewById(R.id.imageViewFood);
         ImageView IVPub = (ImageView) findViewById(R.id.imageViewPub);
         ImageView IVPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
         ImageView IVMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
         ImageView IVParty = (ImageView) findViewById(R.id.imageViewParty);
+         */
+        RelativeLayout RLFood = (RelativeLayout) findViewById(R.id.RLFood);
+        RelativeLayout RLPub = (RelativeLayout) findViewById(R.id.RLPub);
+        RelativeLayout RLPerfect = (RelativeLayout) findViewById(R.id.RLPerfect);
+        RelativeLayout RLMustSee = (RelativeLayout) findViewById(R.id.RLMustSee);
+        RelativeLayout RLParty = (RelativeLayout) findViewById(R.id.RLParty);
 
         buttonsInit();
 
@@ -128,34 +136,34 @@ public class ApplicationActivityController extends AppCompatActivity {
                 preplannedButton.setAlpha(1 * slideOffset);
 
                 if (inverseOffset >= 0.1) {
-                    IVFood.setAlpha(1 * inverseOffset);
-                    IVFood.setTranslationY(lerp(initOffset, 0, inverseOffset));
+                    RLFood.setAlpha(1 * inverseOffset);
+                    RLFood.setTranslationY(lerp(initOffset, 0, inverseOffset));
                 } else
-                    IVFood.setAlpha(0f);
+                    RLFood.setAlpha(0f);
 
                 if (inverseOffset >= 0.3) {
-                    IVPub.setAlpha(1 * inverseOffset);
-                    IVPub.setTranslationY(lerp(initOffset, 0, inverseOffset));
+                    RLPub.setAlpha(1 * inverseOffset);
+                    RLPub.setTranslationY(lerp(initOffset, 0, inverseOffset));
                 } else
-                    IVPub.setAlpha(0f);
+                    RLPub.setAlpha(0f);
 
                 if (inverseOffset >= 0.5) {
-                    IVMustSee.setAlpha(1 * inverseOffset);
-                    IVMustSee.setTranslationY(lerp(initOffset, 0, inverseOffset));
+                    RLMustSee.setAlpha(1 * inverseOffset);
+                    RLMustSee.setTranslationY(lerp(initOffset, 0, inverseOffset));
                 } else
-                    IVMustSee.setAlpha(0f);
+                    RLMustSee.setAlpha(0f);
 
                 if (inverseOffset >= 0.7) {
-                    IVParty.setAlpha(1 * inverseOffset);
-                    IVParty.setTranslationY(lerp(initOffset, 0, inverseOffset));
+                    RLParty.setAlpha(1 * inverseOffset);
+                    RLParty.setTranslationY(lerp(initOffset, 0, inverseOffset));
                 } else
-                    IVParty.setAlpha(0f);
+                    RLParty.setAlpha(0f);
 
                 if (inverseOffset >= 0.9) {
-                    IVPerfect.setAlpha(1 * inverseOffset);
-                    IVPerfect.setTranslationY(lerp(initOffset, 0, inverseOffset));
+                    RLPerfect.setAlpha(1 * inverseOffset);
+                    RLPerfect.setTranslationY(lerp(initOffset, 0, inverseOffset));
                 } else
-                    IVPerfect.setAlpha(0f);
+                    RLPerfect.setAlpha(0f);
 
             }
         });
@@ -811,24 +819,24 @@ public class ApplicationActivityController extends AppCompatActivity {
     private void buttonsInit() {
         Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
         Button preplannedButton = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
-        ImageView IVFood = (ImageView) findViewById(R.id.imageViewFood);
-        ImageView IVPub = (ImageView) findViewById(R.id.imageViewPub);
-        ImageView IVPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
-        ImageView IVMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
-        ImageView IVParty = (ImageView) findViewById(R.id.imageViewParty);
+        RelativeLayout RLFood = (RelativeLayout) findViewById(R.id.RLFood);
+        RelativeLayout RLPub = (RelativeLayout) findViewById(R.id.RLPub);
+        RelativeLayout RLPerfect = (RelativeLayout) findViewById(R.id.RLPerfect);
+        RelativeLayout RLMustSee = (RelativeLayout) findViewById(R.id.RLMustSee);
+        RelativeLayout RLParty = (RelativeLayout) findViewById(R.id.RLParty);
 
-        IVFood.setAlpha(0f);
-        IVPub.setAlpha(0f);
-        IVPerfect.setAlpha(0f);
-        IVMustSee.setAlpha(0f);
-        IVParty.setAlpha(0f);
+        RLFood.setAlpha(0f);
+        RLPub.setAlpha(0f);
+        RLPerfect.setAlpha(0f);
+        RLMustSee.setAlpha(0f);
+        RLParty.setAlpha(0f);
         preplannedButton.setAlpha(1f);
 
-        IVFood.setTranslationY(initOffset);
-        IVPub.setTranslationY(initOffset);
-        IVPerfect.setTranslationY(initOffset);
-        IVMustSee.setTranslationY(initOffset);
-        IVParty.setTranslationY(initOffset);
+        RLFood.setTranslationY(initOffset);
+        RLPub.setTranslationY(initOffset);
+        RLPerfect.setTranslationY(initOffset);
+        RLMustSee.setTranslationY(initOffset);
+        RLParty.setTranslationY(initOffset);
         preplannedButton.setTranslationY(0);
         createButton.setTranslationY(0);
     }
