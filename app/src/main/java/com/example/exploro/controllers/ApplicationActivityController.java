@@ -22,6 +22,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -566,7 +567,8 @@ public class ApplicationActivityController extends AppCompatActivity {
                     View categoryCard = inflater.inflate(R.layout.location_category_view, holder, false);
                     holder.addView(categoryCard);
                     LinearLayout categoryCardHolder = categoryCard.findViewById(R.id.locationViewHolder);
-                    generatePlaceCards(categories[index].toString(), categories[index], categoryCardHolder, holder, 2);
+                    JSONArray pairPlaces = getPlaces(categories[index].toString(), categories[index], 2);
+                    generatePlaceCards(pairPlaces, categoryCardHolder, holder);
 
                     // Set card title text
                     TextView categoryTitle = categoryCard.findViewById(R.id.locationsCategoryText0);
@@ -590,6 +592,11 @@ public class ApplicationActivityController extends AppCompatActivity {
                         findViewById(R.id.viewAllBackButton).setVisibility(View.VISIBLE);
                         LinearLayout viewAllHolder = locationsScroll.findViewById(R.id.categoryPlaceViewHolder);
                         TextView headerTitle = (TextView) viewAllHolder.findViewById(R.id.categoryTitleText);
+
+                        // If previous load was of the same category then no need to reload it
+                        if (headerTitle.getText().equals("Top " + categoryTitle.getText() + "s"))
+                            return;
+
                         headerTitle.setText("Top " + categoryTitle.getText() + "s");
 
                         // Clear up view from previous uses
@@ -602,8 +609,10 @@ public class ApplicationActivityController extends AppCompatActivity {
                         // Generate new views
                         LinearLayout pairHolder = (LinearLayout) getLayoutInflater().inflate(R.layout.location_pair_holder, viewAllHolder, false);
                         viewAllHolder.addView(pairHolder);
-                        if (viewAllHolder != null)
-                            generatePlaceCards(categories[index].toString(), categories[index], pairHolder, viewAllHolder, 20);
+                        if (viewAllHolder != null) {
+                            JSONArray places = getPlaces(categories[index].toString(), categories[index], 20);
+                            generatePlaceCards(places, pairHolder, viewAllHolder);
+                        }
                     }));
                 }
             };
@@ -631,16 +640,7 @@ public class ApplicationActivityController extends AppCompatActivity {
         return null;
     }
 
-    /**
-     * Get a specified amount of the top places for a specified category and create place card views for a holder
-     *
-     * @param query - Search string query
-     * @param type - category type
-     * @param holder - Which category card to create new location views in
-     */
-    private void generatePlaceCards(String query, MapsAPICaller.PlaceTypes type, LinearLayout holder, LinearLayout root, int amount) {
-        LayoutInflater layoutInflater = getLayoutInflater();
-
+    private JSONArray getPlaces(String query, MapsAPICaller.PlaceTypes type, int amount) {
         JSONArray places = null;
 
         // Check if wanted places are already in cache
@@ -649,6 +649,7 @@ public class ApplicationActivityController extends AppCompatActivity {
             try {
                 if (queryCaches.getJSONObject(i).has(query)) {
                     System.out.println(queryCaches.getJSONObject(i).getJSONArray(query).length());
+
                     if (queryCaches.getJSONObject(i).getJSONArray(query).length() == amount) {
                         places = queryCaches.getJSONObject(i).getJSONArray(query);
                         break;
@@ -666,8 +667,8 @@ public class ApplicationActivityController extends AppCompatActivity {
 
             // If places couldn't be retrieved
             if (places == null) {
-                mMessageHelper.displaySnackbar("Couldn't load places from location", 3 , "Error", holder);
-                return;
+                Log.e("Warning", "Couldn't load places from location");
+                return null;
             }
 
             // Cache api results
@@ -679,6 +680,19 @@ public class ApplicationActivityController extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
+        return places;
+    }
+
+    /**
+     * Generate place card views for a JSONArray of places
+     *
+     * @param places - JSONArray of places
+     * @param holder - Which category card to create new location views in
+     * @param root - Root holder
+     */
+    private void generatePlaceCards(JSONArray places, LinearLayout holder, LinearLayout root) {
+        LayoutInflater layoutInflater = getLayoutInflater();
 
         // Add location views for each location
         for (int i  = 0; i < places.length(); i++) {
@@ -697,10 +711,12 @@ public class ApplicationActivityController extends AppCompatActivity {
                 // Create the view
                 TextView locationTitle = locationView.findViewById(R.id.locationViewTitle);
                 locationTitle.setText(place.getString("name"));
+                RatingBar locationRating = locationView.findViewById(R.id.locationViewRating);
+                locationRating.setRating(place.getInt("rating"));
                 holder.addView(locationView);
 
                 // Add a new horizontal holder for every two places
-                if (i % 2 == 1 && amount > 2) {
+                if (i % 2 == 1 && places.length() > 2) {
                     LinearLayout newHolder = (LinearLayout) layoutInflater.inflate(R.layout.location_pair_holder, root, false);
                     root.addView(newHolder);
                     holder = newHolder;
