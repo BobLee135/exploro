@@ -200,15 +200,19 @@ public class UserModel {
             }
         });
     }
-    public void addNewFriend(String username, String friendUsername) {
-        User friend = new User();
-        friend.username = friendUsername;
-        User user = new User();
-        user.username = username;
-        db.child("users").child(username).child("friends").child(friendUsername).setValue(friend);
-        db.child("users").child(friendUsername).child("friends").child(username).setValue(user);
+    public void addNewFriend(User user, User friend) {
+        User friendObj = new User();
+        friendObj.experience = friend.experience;
+        friendObj.username = friend.username;
+        User userObj = new User();
+        userObj.experience = user.experience;
+        userObj.username = user.username;
+
+        db.child("users").child(user.username).child("friends").child(friend.username).setValue(friendObj);
+        db.child("users").child(friend.username).child("friends").child(user.username).setValue(userObj);
 
     }
+
     public void deleteFriend(String username, String friendUsername) {
         db.child("users").child(username).child("friends").child(friendUsername).removeValue();
         db.child("users").child(friendUsername).child("friends").child(username).removeValue();
@@ -225,19 +229,16 @@ public class UserModel {
         db.child("users").child(username).child("password").setValue(newUsername);
     }
     public void addUserExperience(String username, int experience) {
-        final CountDownLatch latch = new CountDownLatch(1);
         db.child("users").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
                 user.experience += experience;
                 db.child("users").child(user.username).setValue(user);
-                latch.countDown();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 System.out.println("Could not get thang");
-                latch.countDown();
 
             }
         });
