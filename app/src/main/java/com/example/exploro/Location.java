@@ -11,16 +11,19 @@ public class Location implements Parcelable {
     private String name;
     private String address;
     private LatLng latlng;
+    private byte[] referenceImage;
 
-    public Location(String name, String address, LatLng latlng) {
+    public Location(String name, String address, LatLng latlng, byte[] referenceImage) {
         this.name = name;
         this.address = address;
         this.latlng = latlng;
+        this.referenceImage = referenceImage;
     }
 
     public String getName() { return this.name; }
     public String getAddress() { return this.address; }
     public LatLng getLocation() { return this.latlng; }
+    public byte[] getImage() { return this.referenceImage; }
 
     public void setName(String name) { this.name = name; }
     public void setAddress(String address) { this.address = address; }
