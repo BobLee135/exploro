@@ -10,6 +10,8 @@ import com.example.exploro.R;
 import com.example.exploro.models.schemas.Trips;
 import com.example.exploro.models.schemas.User;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHolder> {
@@ -36,9 +38,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
+        Date currentDate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy MM dd");
         Trips trip = mTravelList.get(position);
-        holder.mCityTextView.setText(trip.getCity());
-        holder.mCountryTextView.setText(trip.getCountry());
+        holder.mDateTextView.setText(trip.getDate());
         holder.mPlaceTextView.setText(trip.getPlace());
 
     }
@@ -49,16 +52,14 @@ public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ViewHold
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView mCityTextView;
-        TextView mCountryTextView;
+        TextView mDateTextView;
         TextView mPlaceTextView;
 
 
         public ViewHolder(View itemView) {
             super(itemView);
             //ONLY TEMP IDS RIGHT NOW
-            mCityTextView = itemView.findViewById(R.id.city_text_view);
-            mCountryTextView = itemView.findViewById(R.id.country_text_view);
+            mDateTextView = itemView.findViewById(R.id.date_text_view);
             mPlaceTextView = itemView.findViewById(R.id.place_text_view);
 
         }

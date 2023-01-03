@@ -36,22 +36,13 @@
                 android:textSize="24sp" />
 
             <TextView
-                android:id="@+id/city_text_view"
+                android:id="@+id/date_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
                 android:paddingHorizontal="5dp"
-                android:text="Test"
+                android:text="date"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/country_text_view"
-                android:layout_width="match_parent"
-                android:layout_height="25dp"
-                android:paddingHorizontal="5dp"
-                android:text="Sweden"
-                android:textColor="@color/black"
-                android:textSize="100sp" />
 
         </LinearLayout>
     </LinearLayout>

@@ -1,7 +1,7 @@
 package com.example.exploro.models.schemas;
 
 public class Trips {
-    public String city, country, place;
+    public String city, country, place, date;
 
     public Trips() {}
     public Trips(String city, String country, String place) {
@@ -32,5 +32,13 @@ public class Trips {
 
     public void setPlace(String place) {
         this.place = place;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }
