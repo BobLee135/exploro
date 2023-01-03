@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.os.Parcelable;
 import android.os.StrictMode;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +24,14 @@ import android.widget.Button;
 
 import com.example.exploro.BuildConfig;
 import com.example.exploro.Location;
+import com.example.exploro.MapsAPICaller;
 import com.example.exploro.R;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.example.exploro.databinding.ActivityMapsBinding;
@@ -101,7 +106,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        Thread apiThread = new Thread(new Runnable() {
+        Thread locationThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 // Compute and display the route
@@ -120,15 +125,29 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
                         @Override
                         public void run() {
                             for (int i = 0; i < dsts.length; i++) {
+                                // Add location on map
                                 MarkerOptions place = new MarkerOptions().position(dsts[i].getLocation()).title(dsts[i].getAddress());
                                 googleMap.addMarker(place);
+
+                                // Add image for location on map
+                                if (dsts[i].getImage() != null) {
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(dsts[i].getImage(), 0, dsts[i].getImage().length);
+                                    BitmapDescriptor icon = BitmapDescriptorFactory.fromBitmap(bitmap);
+                                    // Applying complex math formula to calculate new latitude and longitude position of the image relative to the pin on the map
+                                    LatLng imagePos = new LatLng(
+                                        dsts[i].getLocation().latitude + 0.0003,
+                                            dsts[i].getLocation().longitude
+                                    );
+                                    MarkerOptions image = new MarkerOptions().position(imagePos).icon(icon);
+                                    googleMap.addMarker(image);
+                                }
                             }
                         }
                     });
                 }
             }
         });
-        apiThread.start();
+        locationThread.start();
 
         if (MyLocationListener.currentLocation != null) {
             // add users location
@@ -216,14 +235,18 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         this.URL += "&key=" + BuildConfig.MAPS_API_KEY;
     }
 
-    // Returns a single destination based on a search string
+    // Takes a location name as a parameter, such as "Olles korvbar"
+    // Returns a single destination with complemented information
+    //      Address
+    //      Location
+    //      Reference image (if it exists)
     public Location buildPlace(String place) {
         String query = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=";
         query += place;
         query += "&inputtype=textquery&locationbias=circle:";
-        query += 1000; // radius of place search
+        query += 2000; // radius of place search
         query += "@" + MyLocationListener.currentLocation.latitude + "," + MyLocationListener.currentLocation.longitude;
-        query += "&fields=formatted_address%2Cgeometry&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
+        query += "&fields=formatted_address%2Cgeometry%2Cphoto&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
 
         // Build the location object from the query response
         Location destination = null;
@@ -231,18 +254,24 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
             Response response = sendRequest(query);
             JSONObject jsonResponse = new JSONObject(response.body().string());
 
+            // Get the image if there is one
+            byte[] photo = null;
+            if (jsonResponse.getJSONArray("candidates").getJSONObject(0).has("photos")) {
+                String ref = jsonResponse.getJSONArray("candidates").getJSONObject(0).getJSONArray("photos").getJSONObject(0).getString("photo_reference");
+                photo = new MapsAPICaller().getImageURLFromPhotoReference(ref, 150, 150);
+            }
             destination = new Location(
-                    "",
+                    place,
                     jsonResponse.getJSONArray("candidates").getJSONObject(0).getString("formatted_address"),
                     new LatLng(
                         jsonResponse.getJSONArray("candidates").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat"),
                         jsonResponse.getJSONArray("candidates").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lng")
-                    )
+                    ),
+                    photo
             );
-        } catch (IOException | JSONException e) {
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
-
         return destination;
     }
 
@@ -250,7 +279,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     *   THIS FUNCTION CAN BE EXPENSIVE AS IT CALLS FOR 20 LOCATIONS
     *   USE buildPlace FUNCTION INSTEAD IF POSSIBLE
     */
-    // Returns an array of addresses representing destinations based on a search string
+    // Returns an array of unique destinations based on a search string
     public Location[] buildPlaces(String place, String type, int limit) {
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
         url += "query=" + place;
@@ -265,13 +294,21 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         try {
             JSONObject jsonResponse = new JSONObject(response.body().string());
             for (int i = 0; i < limit; i++) {
+                // Get the image if there is one
+                byte[] photo = null;
+                if (jsonResponse.getJSONArray("results").getJSONObject(i).has("photos")) {
+                    String ref = jsonResponse.getJSONArray("results").getJSONObject(i).getJSONArray("photos").getJSONObject(0).getString("photo_reference");
+                    photo = new MapsAPICaller().getImageURLFromPhotoReference(ref, 150, 150);
+                }
+
                 Location destination = new Location(
-                        "",
+                        place,
                         jsonResponse.getJSONArray("results").getJSONObject(i).getString("formatted_address"),
                         new LatLng(
                                 jsonResponse.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat"),
                                 jsonResponse.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lng")
-                        )
+                        ),
+                        photo
                 );
                 destinationList[i] = destination;
             }
