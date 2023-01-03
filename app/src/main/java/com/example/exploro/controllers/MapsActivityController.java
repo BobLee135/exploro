@@ -113,7 +113,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
                 dsts = getLocationsFromSearch(getIntent().getStringArrayExtra("destinationList"));
                 if (dsts != null) {
                     Location[] completeRoute = new Location[dsts.length+1];
-                    completeRoute[0] = new Location("you", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
+                    completeRoute[0] = new Location("you", MyLocationListener.currentAddress, MyLocationListener.currentLocation, null);
                     System.arraycopy(dsts, 0, completeRoute, 1, dsts.length); // Append dsts to completeRoute on index 1 and forward
 
                     buildRoute(completeRoute);

@@ -6,11 +6,25 @@
     android:layout_height="match_parent"
     android:background="@color/red_shade_2">
 
+    <ImageView
+        android:id="@+id/logo3"
+        android:layout_width="75dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="10dp"
+        android:contentDescription="@string/logo"
+        android:src="@drawable/logo_svg"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="450dp"
+        android:layout_height="0dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent" >
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentContainerView"
@@ -22,19 +36,28 @@
 
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
-        android:layout_height="280dp"
+        android:layout_height="350dp"
+        android:layout_marginTop="75dp"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
         app:layout_constraintTop_toTopOf="parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingHorizontal="20dp"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
                 android:id="@+id/createRoute"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusableInTouchMode="true"
                 android:orientation="vertical">
 
             </LinearLayout>
@@ -43,9 +66,9 @@
                 android:id="@+id/addDestination"
                 android:layout_width="260dp"
                 android:layout_height="48dp"
-                android:layout_marginTop="10dp"
                 android:layout_below="@+id/createRoute"
-                android:layout_marginLeft="20dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
                 android:backgroundTint="@color/white_shade_1"
                 android:elevation="5dp"
                 android:insetTop="0dp"
@@ -82,6 +105,7 @@
             android:stateListAnimator="@null"
             android:text="@string/start_route"
             android:textColor="@color/white_shade_1"
+            android:visibility="invisible"
             app:cornerRadius="10dp"
             tools:ignore="TextContrastCheck" />
 
