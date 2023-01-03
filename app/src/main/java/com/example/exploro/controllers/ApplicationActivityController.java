@@ -171,7 +171,6 @@ public class ApplicationActivityController extends AppCompatActivity {
         viewAllBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("HEJSAN BITCH");
                 exitViewAllMode();
             }
         });
@@ -213,6 +212,17 @@ public class ApplicationActivityController extends AppCompatActivity {
                     mLocationsBottomSheetBehavior.setState(mLocationsBottomSheetBehavior.STATE_COLLAPSED);
 
                     fragmentTransaction.commit();
+                    return true;
+                }
+                // Profile
+                if (item.getItemId() == R.id.nav_home) {
+                    findViewById(R.id.selectFragmentContainer).setVisibility(View.INVISIBLE);
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    findViewById(R.id.selectFragmentContainer).setVisibility(View.INVISIBLE);
+                    findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.VISIBLE);
+                    findViewById(R.id.createOwnRouteBtn).setVisibility(View.VISIBLE);
+                    findViewById(R.id.logo2).setVisibility(View.VISIBLE);
+
                     return true;
                 }
 
