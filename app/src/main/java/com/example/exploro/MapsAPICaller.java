@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.example.exploro.controllers.MyLocationListener;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.maps.model.LatLng;
 
@@ -153,11 +154,12 @@ public class MapsAPICaller {
     public JSONArray getPlacesFromQuery(String query, boolean currentlyOpen, int radius, PlaceTypes type, int limit) {
         String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
         url += "query=" + query;
-        //url += "&location=" + location;
+        url += "&location=" + MyLocationListener.currentLocation.latitude + "," + MyLocationListener.currentLocation.longitude;
         //url += "&opennow=" + currentlyOpen;
         url += "&radius=" + radius;
-        url += "&type=";
+        url += "&type=" + type.toString();
         url += "&key=" + BuildConfig.MAPS_API_KEY;
+        System.out.println("QUERY " + url);
 
         OkHttpClient requestClient = new OkHttpClient().newBuilder().build();
         Request request = new Request.Builder().url(url).get().build();
