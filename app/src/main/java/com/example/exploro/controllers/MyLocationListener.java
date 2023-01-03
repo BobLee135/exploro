@@ -6,6 +6,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -23,11 +24,14 @@ public class MyLocationListener implements LocationListener {
     public static String currentAddress = null;
     public static MarkerOptions userLocationMarker = null;
     private Context currentActivity = null;
+    private LocationManager locationManager;
 
     public MyLocationListener(Context context) {
         this.currentActivity = context;
         userLocationMarker = new MarkerOptions();
         userLocationMarker.title("You").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        getCurrentLocation();
     }
 
     @Override
@@ -63,5 +67,13 @@ public class MyLocationListener implements LocationListener {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private void getCurrentLocation() {
+
+        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if (location == null)
+            return;
+        currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
     }
 }

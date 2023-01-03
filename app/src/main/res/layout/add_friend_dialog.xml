@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/white_shade_3">
+
+    <EditText
+        android:id="@+id/usernameInputField"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="4dp"
+        android:autofillHints="@string/username"
+        android:background="@drawable/common_google_signin_btn_icon_light_normal_background"
+        android:elevation="10dp"
+        android:ems="10"
+        android:hint="@string/username"
+        android:inputType="text"
+        android:maxLength="40"
+        android:padding="10dp"
+        android:singleLine="true"
+
+        android:textColor="@color/text_red_half_transparent"
+        android:textColorHint="@color/text_red_half_transparent"
+        app:layout_constraintBottom_toTopOf="@+id/passwordInputField"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/invalidUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Invalid username"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/add_friend_button"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="25dp"
+        android:layout_marginVertical="5dp"
+        android:backgroundTint="@color/green_shade_1"
+        android:text="Add friend"
+        android:textSize="16sp" />
+
+</LinearLayout>

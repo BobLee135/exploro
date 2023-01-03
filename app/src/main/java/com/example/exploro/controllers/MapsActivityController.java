@@ -89,8 +89,6 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
                 // Jump back to main page
                 Activity currentActivity = getSupportFragmentManager().findFragmentById(R.id.miniMap).getActivity();
                 currentActivity.finish();
-                Intent intent = new Intent(currentActivity, ApplicationActivityController.class);
-                startActivity(intent);
             }
         });
     }
@@ -113,15 +111,16 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
             public void run() {
                 // Compute and display the route
                 dsts = getLocationsFromSearch(getIntent().getStringArrayExtra("destinationList"));
-                Location[] completeRoute = new Location[dsts.length+1];
-                completeRoute[0] = new Location("you", MyLocationListener.currentAddress, MyLocationListener.currentLocation, null);
-                System.arraycopy(dsts, 0, completeRoute, 1, dsts.length); // Append dsts to completeRoute on index 1 and forward
-
-                buildRoute(completeRoute);
-                displayRoute();
-
-                // add markers for each place on the route to visit
                 if (dsts != null) {
+                    Location[] completeRoute = new Location[dsts.length+1];
+                    completeRoute[0] = new Location("you", MyLocationListener.currentAddress, MyLocationListener.currentLocation);
+                    System.arraycopy(dsts, 0, completeRoute, 1, dsts.length); // Append dsts to completeRoute on index 1 and forward
+
+                    buildRoute(completeRoute);
+                    displayRoute();
+
+                    // add markers for each place on the route to visit
+
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -145,7 +144,6 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
                             }
                         }
                     });
-
                 }
             }
         });
@@ -171,6 +169,9 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
             JSONObject route = routesArray.getJSONObject(0);
             JSONObject overview_polyline = route.getJSONObject("overview_polyline");
             String encodedString = overview_polyline.getString("points");
+
+
+            Log.d("TESTPRINT", "HEJSAN");
 
             List<LatLng> list = PolyUtil.decode(encodedString);
 
