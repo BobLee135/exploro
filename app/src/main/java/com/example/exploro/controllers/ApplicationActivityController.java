@@ -583,8 +583,15 @@ public class ApplicationActivityController extends AppCompatActivity {
                     View categoryCard = inflater.inflate(R.layout.location_category_view, holder, false);
                     holder.addView(categoryCard);
                     LinearLayout categoryCardHolder = categoryCard.findViewById(R.id.locationViewHolder);
-                    JSONArray pairPlaces = getPlaces(categories[index].toString(), categories[index], 0);
-                    generatePlaceCards(pairPlaces, categoryCardHolder, holder);
+                    JSONArray pairPlaces = getPlaces(categories[index].toString(), categories[index], 2);
+
+                    if (pairPlaces != null && pairPlaces.length() > 0)
+                        generatePlaceCards(pairPlaces, categoryCardHolder, holder);
+
+                    // if no places for category found then remove it
+                    if (categoryCardHolder.getChildCount() == 0) {
+                        holder.removeView(categoryCard);
+                    }
 
                     // Set card title text
                     TextView categoryTitle = categoryCard.findViewById(R.id.locationsCategoryText0);
@@ -616,18 +623,24 @@ public class ApplicationActivityController extends AppCompatActivity {
                         headerTitle.setText("Top " + categoryTitle.getText() + "s");
 
                         // Clear up view from previous uses
-                        for (int i = 0; i < viewAllHolder.getChildCount(); i++) {
-                            if (viewAllHolder.getChildAt(i) == headerTitle)
-                                continue;
-                            viewAllHolder.removeViewAt(i);
+                        int viewAllHolderChildrenCount = viewAllHolder.getChildCount();
+                        int count = 0;
+                        for (int i = 0; i < viewAllHolderChildrenCount; i++) {
+                            View child = viewAllHolder.getChildAt(count);
+                            if (child != headerTitle)
+                                viewAllHolder.removeView(child);
+                            else
+                                count++;
                         }
 
                         // Generate new views
                         LinearLayout pairHolder = (LinearLayout) getLayoutInflater().inflate(R.layout.location_pair_holder, viewAllHolder, false);
                         viewAllHolder.addView(pairHolder);
                         if (viewAllHolder != null) {
-                            JSONArray places = getPlaces(categories[index].toString(), categories[index], 0);
-                            generatePlaceCards(places, pairHolder, viewAllHolder);
+                            System.out.println(categories[index].toString() + " TEST");
+                            JSONArray places = getPlaces(categories[index].toString(), categories[index], 20);
+                            if (places != null && places.length() > 0)
+                                generatePlaceCards(places, pairHolder, viewAllHolder);
                         }
                     }));
                 }
@@ -663,10 +676,9 @@ public class ApplicationActivityController extends AppCompatActivity {
         for (int i = 0; i < queryCaches.length(); i++) {
             try {
                 if (queryCaches.getJSONObject(i).has(query)) {
-                    System.out.println(queryCaches.getJSONObject(i).getJSONArray(query).length());
-
                     if (queryCaches.getJSONObject(i).getJSONArray(query).length() == amount) {
                         places = queryCaches.getJSONObject(i).getJSONArray(query);
+                        System.out.println(places.toString(4));
                         break;
                     }
                 }
