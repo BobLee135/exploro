@@ -16,8 +16,10 @@ import com.google.firebase.database.ValueEventListener;
 import androidx.annotation.NonNull;
 
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -243,9 +245,22 @@ public class UserModel {
             }
         });
     }
-    public void addTrip(String username, String city, String country, String place){
-        Trips trips = new Trips(city, country, place);
+    public void addTrip(String username, String place){
+        Date currentDate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy MM dd");
+        Trips trips = new Trips();
+        trips.date = dateFormat.format(currentDate);
+        trips.place = place;
         db.child("users").child(username).child("trips").child(place).setValue(trips);
+    }
+    public void addRoute(String username, ArrayList<Trips> route){
+        String id = db.child("users").child(username).child("routes").push().getKey();
+
+        for (Trips trip : route){
+            db.child("users").child(username).child("routes").child(id).child(trip.place).setValue(trip);
+        }
+
+
     }
     public void getUserTrips(String username, final TripsResultStatus result) {
 
