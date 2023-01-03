@@ -53,6 +53,7 @@ public class ProfileFragmentController extends Fragment {
         String name = currIntent.getStringExtra("USER_fullname");
         String username = currIntent.getStringExtra("USER_username");
         UserModel userModel = new UserModel(getActivity());
+
         userModel.getAllUserObjects(new UserModel.ResultStatus(){
             @Override
             public void resultLoaded(List<User> users) {
