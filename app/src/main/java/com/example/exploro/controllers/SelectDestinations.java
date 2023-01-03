@@ -1,12 +1,14 @@
 package com.example.exploro.controllers;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.Icon;
+import android.hardware.input.InputManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -51,7 +54,7 @@ import okhttp3.Response;
 public class SelectDestinations extends Fragment {
 
     private int currentNumberOfDestinations;
-    private int maxNumberOfDestinations = 10; // (no more than 24) google maps api allows for origin + 23 waypoints + destination in a route
+    private int maxNumberOfDestinations = 6; // (no more than 24) google maps api allows for origin + 23 waypoints + destination in a route
     private ArrayList<Location> currentlySelectedLocations = new ArrayList<Location>();
 
     @Override
@@ -74,6 +77,8 @@ public class SelectDestinations extends Fragment {
 
         View view = inflater.inflate(R.layout.select_fragment, container, false);
 
+        Button create = (Button) view.findViewById(R.id.createOwnRoute);
+
         // Create new destination text field
         Button add = (Button) view.findViewById(R.id.addDestination);
         add.setOnClickListener(new View.OnClickListener() {
@@ -84,9 +89,15 @@ public class SelectDestinations extends Fragment {
 
                 if (currentNumberOfDestinations == maxNumberOfDestinations) {
                     add.setEnabled(false);
-                    add.getBackground().setColorFilter(Color.parseColor("#C0C0C0"), PorterDuff.Mode.MULTIPLY);
-                    add.setTextColor(Color.parseColor("#808080"));
+                    add.setVisibility(View.INVISIBLE);
+                    //add.getBackground().setColorFilter(Color.parseColor("#C0C0C0"), PorterDuff.Mode.MULTIPLY);
+                    //add.setTextColor(Color.parseColor("#808080"));
                 }
+
+                if (currentNumberOfDestinations > 0)
+                    create.setVisibility(View.VISIBLE);
+                else
+                    create.setVisibility(View.INVISIBLE);
 
                 // Create a layout to add the inputs to
                 LinearLayout fieldLayout = new LinearLayout(getActivity());
@@ -106,11 +117,19 @@ public class SelectDestinations extends Fragment {
                 newDst.setSingleLine(true);
                 newDst.setPadding(dpToPx(10), 0, 0, 0);
                 LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        dpToPx(320),
+                        dpToPx(275),
                         dpToPx(50)
                 );
-                params.setMargins(dpToPx(20), 0, 0, dpToPx(4));
+                params.setMargins(0, 0, 0, dpToPx(5));
                 newDst.setLayoutParams(params);
+
+                newDst.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View view, boolean hasFocus) {
+                        if (!hasFocus)
+                            hideKeyboard(view);
+                    }
+                });
 
                 // Add a listener to the button
                 // When enter is pressed or the user leaves the text input we add a market of the location on the map
@@ -157,9 +176,10 @@ public class SelectDestinations extends Fragment {
                 Button deleteBtn = new Button(getActivity());
                 deleteBtn.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.delete));
                 LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
-                        dpToPx(30),
-                        dpToPx(30)
+                        dpToPx(35),
+                        dpToPx(35)
                 );
+                btnParams.setMargins(dpToPx(5),0,0,0);
                 deleteBtn.setLayoutParams(btnParams);
                 deleteBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -167,6 +187,15 @@ public class SelectDestinations extends Fragment {
                         // When button is pressed, the entire field and button should be removed
                         ViewGroup parentView = (ViewGroup) view.getParent().getParent();
                         parentView.removeView((ViewGroup) view.getParent());
+
+                        currentNumberOfDestinations--;
+                        if (currentNumberOfDestinations == 0) {
+                            create.setEnabled(false);
+                            create.setVisibility(View.INVISIBLE);
+                        } else {
+                            add.setEnabled(true);
+                            add.setVisibility(View.VISIBLE);
+                        }
 
                         // Update the list of selected locations
                         String address = ((TextView)((ViewGroup)view.getParent()).getChildAt(0)).getText().toString();
@@ -191,9 +220,12 @@ public class SelectDestinations extends Fragment {
 
 
         // Create new route with provided destinations
-        Button create = (Button) view.findViewById(R.id.createOwnRoute);
         create.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                // Only perform action if we have at least selected one location
+                if (currentlySelectedLocations.size() == 0)
+                    return;
+
                 // Retrieve all destinations
                 String[] destinationList = new String[currentlySelectedLocations.size()];
                 for (int i = 0; i < currentlySelectedLocations.size(); i++) {
@@ -232,6 +264,11 @@ public class SelectDestinations extends Fragment {
         Intent intent = new Intent(getActivity(), MapsActivityController.class);
         intent.putExtra("destinationList", destinations);
         startActivity(intent);
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
 }
