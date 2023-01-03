@@ -43,6 +43,7 @@
                 android:id="@+id/addDestination"
                 android:layout_width="260dp"
                 android:layout_height="48dp"
+                android:layout_marginTop="10dp"
                 android:layout_below="@+id/createRoute"
                 android:layout_marginLeft="20dp"
                 android:backgroundTint="@color/white_shade_1"

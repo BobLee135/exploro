@@ -197,7 +197,8 @@ public class SelectDestinations extends Fragment {
                 // Retrieve all destinations
                 String[] destinationList = new String[currentlySelectedLocations.size()];
                 for (int i = 0; i < currentlySelectedLocations.size(); i++) {
-                    destinationList[i] = currentlySelectedLocations.get(i).getAddress();
+                    // NOTICE that the input we send to the map is the locations names and not their addresses
+                    destinationList[i] = currentlySelectedLocations.get(i).getName();
                 }
                 shipAndSendRoute(destinationList);
             }
