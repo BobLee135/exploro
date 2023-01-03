@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="75dp"
     android:layout_marginVertical="5dp"
+    android:background="@color/white_shade_1"
+    android:elevation="4dp"
     android:orientation="vertical">
 
     <LinearLayout
@@ -29,6 +31,7 @@
                 android:layout_height="50dp"
                 android:paddingHorizontal="5dp"
                 android:text="Gustaf Vasaa"
+                android:textColor="@color/black"
                 android:textAlignment="textStart"
                 android:textSize="24sp" />
 
@@ -37,6 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
                 android:paddingHorizontal="5dp"
+                android:textColor="@color/black"
                 android:text="Level 10"
                 android:textSize="16sp" />
         </LinearLayout>
