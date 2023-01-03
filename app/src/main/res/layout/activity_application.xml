@@ -50,113 +50,130 @@
 
             <RelativeLayout
                 android:id="@+id/RLFood"
-                android:alpha="0"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2.5dp"
+                android:alpha="0">
 
                 <ImageView
                     android:id="@+id/imageViewFood"
                     android:layout_width="280dp"
                     android:layout_height="80dp"
+                    android:layout_marginVertical="2.5dp"
                     android:alpha="1"
                     android:elevation="5dp"
                     android:src="@drawable/food"
                     app:cornerRadius="10dp" />
+
                 <TextView
                     android:id="@+id/foodText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginVertical="2.5dp"
+                    android:elevation="10dp"
                     android:text="Food Trip"
                     android:textColor="@color/white_shade_1"
                     android:textSize="24sp"
-                    android:textStyle="normal"
-                    android:elevation="10dp"
-                    android:layout_centerInParent="true" />
+                    android:textStyle="normal" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/RLPub"
-                android:alpha="0"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2.5dp"
+                android:alpha="0">
 
                 <ImageView
                     android:id="@+id/imageViewPub"
                     android:layout_width="280dp"
                     android:layout_height="80dp"
+                    android:layout_marginVertical="2.5dp"
                     android:alpha="1"
                     android:elevation="5dp"
                     android:src="@drawable/pub"
                     app:cornerRadius="10dp" />
+
                 <TextView
                     android:id="@+id/pubText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginVertical="2.5dp"
+                    android:elevation="10dp"
                     android:text="Pub Loafing"
                     android:textColor="@color/white_shade_1"
                     android:textSize="24sp"
-                    android:textStyle="normal"
-                    android:elevation="10dp"
-                    android:layout_centerInParent="true" />
+                    android:textStyle="normal" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/RLMustSee"
-                android:alpha="0"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2.5dp"
+                android:alpha="0">
 
                 <ImageView
                     android:id="@+id/imageViewMustSee"
                     android:layout_width="280dp"
                     android:layout_height="80dp"
+                    android:layout_marginVertical="2.5dp"
                     android:alpha="1"
                     android:elevation="5dp"
                     android:src="@drawable/mustsee"
                     app:cornerRadius="10dp" />
+
                 <TextView
                     android:id="@+id/mustSeeText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginVertical="2.5dp"
+                    android:elevation="10dp"
                     android:text="Must See"
                     android:textColor="@color/white_shade_1"
                     android:textSize="24sp"
-                    android:textStyle="normal"
-                    android:elevation="10dp"
-                    android:layout_centerInParent="true" />
+                    android:textStyle="normal" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/RLParty"
-                android:alpha="0"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2.5dp"
+                android:alpha="0">
 
                 <ImageView
                     android:id="@+id/imageViewParty"
                     android:layout_width="280dp"
                     android:layout_height="80dp"
+                    android:layout_marginVertical="2.5dp"
                     android:alpha="1"
                     android:elevation="5dp"
                     android:src="@drawable/party"
                     app:cornerRadius="10dp" />
+
                 <TextView
                     android:id="@+id/partyText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_marginVertical="2.5dp"
+                    android:elevation="10dp"
                     android:text="Party Trip"
                     android:textColor="@color/white_shade_1"
                     android:textSize="24sp"
-                    android:textStyle="normal"
-                    android:elevation="10dp"
-                    android:layout_centerInParent="true" />
+                    android:textStyle="normal" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/RLPerfect"
-                android:alpha="0"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="2.5dp"
+                android:alpha="0">
 
                 <ImageView
                     android:id="@+id/imageViewPerfect"
@@ -166,16 +183,17 @@
                     android:elevation="5dp"
                     android:src="@drawable/perfect"
                     app:cornerRadius="10dp" />
+
                 <TextView
                     android:id="@+id/perfectText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:elevation="10dp"
                     android:text="Perfect Date"
                     android:textColor="@color/white_shade_1"
                     android:textSize="24sp"
-                    android:textStyle="normal"
-                    android:elevation="10dp"
-                    android:layout_centerInParent="true" />
+                    android:textStyle="normal" />
             </RelativeLayout>
 
         </LinearLayout>
@@ -220,8 +238,9 @@
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/selectFragmentContainer"
             android:name="com.example.exploro.controllers.SelectDestinations"
-            android:layout_width="413dp"
-            android:layout_height="733dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:clickable="true"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
