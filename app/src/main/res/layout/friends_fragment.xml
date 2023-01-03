@@ -4,7 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/red_shade_1">
+    android:background="@color/red_shade_1"
+    android:outlineProvider="none">
+
+    <ImageView
+        android:id="@+id/friendsImageView"
+        android:layout_width="154dp"
+        android:layout_height="112dp"
+        android:layout_marginStart="128dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="129dp"
+        android:layout_marginBottom="617dp"
+        android:alpha="0.1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/friends"
+        app:tint="@color/black" />
+
+    <Button
+        android:id="@+id/add_friend"
+        android:layout_width="102dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="10dp"
+        android:backgroundTint="@color/green_shade_1"
+        android:text="Add friend"
+        app:layout_constraintBottom_toBottomOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="@+id/linearLayout2" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -19,19 +46,21 @@
         <TextView
             android:id="@+id/friendsTitle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:gravity="center"
+            android:paddingTop="20dp"
+            android:rotationX="37"
             android:text="Friends"
             android:textAlignment="center"
-            android:textSize="26sp" />
+            android:textSize="34sp" />
 
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@color/white_shade_2"
+        android:background="@color/red_shade_1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
