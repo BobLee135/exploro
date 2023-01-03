@@ -61,7 +61,7 @@ public class FriendsFragmentController extends Fragment {
                 if (users.isEmpty()){
                     getActivity().findViewById(R.id.noFriendsText).setVisibility(View.VISIBLE);
                 } else {
-                    adapter = new FriendsAdapter(users);
+                    adapter = new FriendsAdapter(users, username, userModel, view);
                     recyclerView.setAdapter(adapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
                 }
@@ -80,64 +80,59 @@ public class FriendsFragmentController extends Fragment {
                     EditText usernameInput = (EditText) dialog.findViewById(R.id.usernameInputField);
                     Button addFriendStepTwo = (Button) dialog.findViewById(R.id.add_friend_button);
                     addFriendStepTwo.setOnClickListener(new View.OnClickListener(){
-
                         @Override
                         public void onClick(View v) {
                             String friendUsername = usernameInput.getText().toString();
-                            Pattern pattern = Pattern.compile("[^A-Za-z0-9]");
-                            Matcher matcher = pattern.matcher(friendUsername);
-                            boolean checker = matcher.find();
-                            if (!checker) {
-                                userModel.getAllUserObjects(new UserModel.ResultStatus() {
-                                    @Override
-                                    public void resultLoaded(List<User> users) {
-                                        User userObject = null;
-                                        User friendObject = null;
-                                        for (User user : users) {
-                                            //if we have found both users
-                                            if (userObject != null && friendObject != null){
-                                                break;
-                                            }
-                                            if (user.username.equals(friendUsername)) {
-                                                friendObject = user;
-                                            }
-                                            if (user.username.equals(username)){
-                                                userObject = user;
-                                            }
-                                        }
-                                        if (userObject == null || friendObject == null){
-                                            messageHelper.displaySnackbar("User does not exist", 2, "Error", usernameInput);
-
-                                        } else{
-                                            userModel.addNewFriend(userObject, friendObject);
-                                            userModel.getFriendsUserObjects(username, new UserModel.ResultStatus(){
-                                                @Override
-                                                public void resultLoaded(List<User> users) {
-                                                    if (users.isEmpty()){
-                                                        getActivity().findViewById(R.id.noFriendsText).setVisibility(View.VISIBLE);
-                                                    } else {
-                                                        adapter = new FriendsAdapter(users);
-                                                        recyclerView.setAdapter(adapter);
-                                                        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-                                                    }
-                                                }
-                                            });
-                                            getActivity().findViewById(R.id.noFriendsText).setVisibility(View.INVISIBLE);
-                                            dialog.hide();
-
-
-                                        }
-
-
-                                    }
-                                });
+                            if (friendUsername.equals(username)){
+                                messageHelper.displaySnackbar("You can't add yourself", 2, "Error", usernameInput);
                             } else {
-                                messageHelper.displaySnackbar("No special characters allowed", 2, "Error", usernameInput);
+                                Pattern pattern = Pattern.compile("[^A-Za-z0-9]");
+                                Matcher matcher = pattern.matcher(friendUsername);
+                                boolean checker = matcher.find();
+                                if (!checker) {
+                                    userModel.getAllUserObjects(new UserModel.ResultStatus() {
+                                        @Override
+                                        public void resultLoaded(List<User> users) {
+                                            User userObject = null;
+                                            User friendObject = null;
+                                            for (User user : users) {
+                                                //if we have found both users
+                                                if (userObject != null && friendObject != null) {
+                                                    break;
+                                                }
+                                                if (user.username.equals(friendUsername)) {
+                                                    friendObject = user;
+                                                }
+                                                if (user.username.equals(username)) {
+                                                    userObject = user;
+                                                }
+                                            }
+                                            if (userObject == null || friendObject == null) {
+                                                messageHelper.displaySnackbar("User does not exist", 2, "Error", usernameInput);
+                                            } else {
+                                                userModel.addNewFriend(userObject, friendObject);
+                                                userModel.getFriendsUserObjects(username, new UserModel.ResultStatus() {
+                                                    @Override
+                                                    public void resultLoaded(List<User> users) {
+                                                        if (users.isEmpty()) {
+                                                            getActivity().findViewById(R.id.noFriendsText).setVisibility(View.VISIBLE);
+                                                        } else {
+                                                            adapter = new FriendsAdapter(users, username, userModel, view);
+                                                            recyclerView.setAdapter(adapter);
+                                                            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                                                        }
+                                                    }
+                                                });
+                                                getActivity().findViewById(R.id.noFriendsText).setVisibility(View.INVISIBLE);
+                                                dialog.hide();
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    messageHelper.displaySnackbar("No special characters allowed", 2, "Error", usernameInput);
 
+                                }
                             }
-
-
-
                         }
                     });
 

@@ -5,7 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="75dp"
     android:layout_marginVertical="5dp"
+    android:background="@color/white_shade_1"
+    android:elevation="4dp"
     android:orientation="vertical">
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,6 +32,7 @@
                 android:layout_height="50dp"
                 android:paddingHorizontal="5dp"
                 android:text="Gustaf Vasaa"
+                android:textColor="@color/black"
                 android:textAlignment="textStart"
                 android:textSize="24sp" />
 
@@ -38,6 +42,7 @@
                 android:layout_height="25dp"
                 android:paddingHorizontal="5dp"
                 android:text="Level 10"
+                android:textColor="@color/black"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -47,20 +52,15 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <Button
+            <ImageView
+                android:contentDescription="Delete this friend"
                 android:id="@+id/deleteButton"
-                android:layout_width="62dp"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="15dp"
-                android:backgroundTint="#D18585"
-                android:paddingHorizontal="3dp"
-                android:paddingLeft="0dp"
-                android:paddingTop="0dp"
-                android:paddingRight="0dp"
-                android:paddingBottom="0dp"
-                android:text="Delete"
-                android:textSize="13dp" />
+                android:clickable="true"
+                android:paddingTop="10dp"
+                app:srcCompat="@drawable/delete" />
         </LinearLayout>
     </LinearLayout>
 
