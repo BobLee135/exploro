@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.exploro.HelpFunctions;
 import com.example.exploro.MessageHelper;
 import com.example.exploro.R;
 import com.example.exploro.models.UserModel;
@@ -29,6 +30,7 @@ import java.util.regex.Pattern;
 public class RegisterFragmentController extends Fragment {
 
     private MessageHelper mMessageHelper;
+    private HelpFunctions helpFunctions = new HelpFunctions();
 
     public RegisterFragmentController() {
         // Required empty public constructor
@@ -141,58 +143,44 @@ public class RegisterFragmentController extends Fragment {
      * @param confirmPassword - User input confirm password
      * @return true if input passes validation, otherwise false
      */
-    private boolean isValid(String fullName, String email, String username, String password, String confirmPassword) {
-        if (fullName.length() == 0
-                || email.length() == 0
-                || username.length() == 0
-                || password.length() == 0
-                || confirmPassword.length() == 0) {
+    public boolean isValid(String fullName, String email, String username, String password, String confirmPassword) {
+        if (!helpFunctions.nonEmptyField(fullName, email, username, password, confirmPassword)) {
             mMessageHelper.displaySnackbar("All fields are not filled!", 3, "Error", getView());
             return false;
         }
 
 
         // Check for valid email
-        Pattern emailRegex = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-        Matcher emailValidator = emailRegex.matcher(email);
-        if(!emailValidator.find()) {
+        if(!helpFunctions.validEmail(email)) {
             mMessageHelper.displaySnackbar("Email entered is not valid!", 3, "Error", getView());
             return false;
         }
 
-        Pattern upperCase = Pattern.compile("[A-Z]");
-        Pattern digit = Pattern.compile("[0-9]");
-        Pattern special = Pattern.compile ("[!@#$%&*()_+=|<>?{}\\[\\]~-]");
-        //Pattern eight = Pattern.compile (".{8}");
 
+        if (!helpFunctions.validPasswordUppercase(password)) {
 
-        Matcher hasUpperCase = upperCase.matcher(password);
-        Matcher hasDigit = digit.matcher(password);
-        Matcher hasSpecial = special.matcher(password);
-
-        if (!hasUpperCase.find()) {
             mMessageHelper.displaySnackbar("Password requires at least one uppercase letter!", 3, "Error", getView());
             return false;
         }
 
-        if (!hasDigit.find()) {
+        if (!helpFunctions.validPasswordDigit(password)) {
             mMessageHelper.displaySnackbar("Password requires at least one number!", 3, "Error", getView());
             return false;
         }
 
-        if (!hasSpecial.find()) {
+        if (!helpFunctions.validPasswordSpecial(password)) {
             mMessageHelper.displaySnackbar("Password requires at least one special character!", 3, "Error", getView());
             return false;
         }
 
         // Check for password length, minimum 8, max 16
-        if (password.length() < 8 || password.length() > 16) {
+        if (!helpFunctions.validPasswordLength(password)) {
             mMessageHelper.displaySnackbar("Password has to be between 8 and 16 characters long!", 3, "Error", getView());
             return false;
         }
 
         // Check for confirm password being the same as password
-        if (!confirmPassword.equals(password)) {
+        if (!helpFunctions.validPasswordConfirm(password, confirmPassword)) {
             mMessageHelper.displaySnackbar("Confirm password and password does not match!", 3, "Error", getView());
             return false;
         }
