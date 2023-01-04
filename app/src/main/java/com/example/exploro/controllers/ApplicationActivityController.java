@@ -565,7 +565,7 @@ public class ApplicationActivityController extends AppCompatActivity {
 
             // Set rating
             if (placeInfo.has("rating"))
-                placeInfoRating.setText("Rating: " + placeInfo.getInt("rating") + " / 5");
+                placeInfoRating.setText("Rating: " + placeInfo.getDouble("rating") + " / 5");
 
             // Set amount of ratings
             if (placeInfo.has("user_ratings_total"))
@@ -763,7 +763,7 @@ public class ApplicationActivityController extends AppCompatActivity {
                 TextView locationTitle = locationView.findViewById(R.id.locationViewTitle);
                 locationTitle.setText(place.getString("name"));
                 RatingBar locationRating = locationView.findViewById(R.id.locationViewRating);
-                locationRating.setRating(place.getInt("rating"));
+                locationRating.setRating((float) place.getDouble("rating"));
                 holder.addView(locationView);
 
                 // Add a new horizontal holder for every two places
