@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -46,7 +47,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -76,6 +80,8 @@ public class ApplicationActivityController extends AppCompatActivity {
     // Global variables
     private float initOffset = -200f;
 
+    private Map<ImageView,String> imageMap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +94,9 @@ public class ApplicationActivityController extends AppCompatActivity {
         // Initialize cache arrays
         placeCache = new JSONArray();
         queryCaches = new JSONArray();
+
+        // Initialize maps
+        imageMap = new ConcurrentHashMap<>();
 
         // Get views
         locationsScroll = findViewById(R.id.allLocationsScrollView);
@@ -216,12 +225,17 @@ public class ApplicationActivityController extends AppCompatActivity {
                 }
                 // Profile
                 if (item.getItemId() == R.id.nav_home) {
-                    findViewById(R.id.selectFragmentContainer).setVisibility(View.INVISIBLE);
                     drawerLayout.closeDrawer(GravityCompat.START);
                     findViewById(R.id.selectFragmentContainer).setVisibility(View.INVISIBLE);
                     findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.VISIBLE);
                     findViewById(R.id.createOwnRouteBtn).setVisibility(View.VISIBLE);
                     findViewById(R.id.logo2).setVisibility(View.VISIBLE);
+
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    SelectDestinations selectDst = new SelectDestinations();
+                    fragmentTransaction.replace(R.id.selectFragmentContainer, selectDst);
+                    fragmentTransaction.commit();
 
                     return true;
                 }
@@ -296,8 +310,6 @@ public class ApplicationActivityController extends AppCompatActivity {
                 findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.INVISIBLE);
                 findViewById(R.id.createOwnRouteBtn).setVisibility(View.INVISIBLE);
                 findViewById(R.id.logo2).setVisibility(View.INVISIBLE);
-
-                SelectDestinations selectDst = new SelectDestinations();
                 findViewById(R.id.selectFragmentContainer).setVisibility(View.VISIBLE);
                 // Hide bottom sheet
                 mLocationsBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -315,7 +327,6 @@ public class ApplicationActivityController extends AppCompatActivity {
                 findViewById(R.id.sideNavBarToggle).setVisibility(View.INVISIBLE);
                 findViewById(R.id.prePlannedCreateOwn).setVisibility(View.INVISIBLE);
 
-                SelectDestinations selectDst = new SelectDestinations();
                 findViewById(R.id.selectFragmentContainer).setVisibility(View.VISIBLE);
             }
         });
@@ -592,10 +603,13 @@ public class ApplicationActivityController extends AppCompatActivity {
                     View categoryCard = inflater.inflate(R.layout.location_category_view, holder, false);
                     holder.addView(categoryCard);
                     LinearLayout categoryCardHolder = categoryCard.findViewById(R.id.locationViewHolder);
+                    imageMap.clear();
                     JSONArray pairPlaces = getPlaces(categories[index].toString(), categories[index], 2);
 
                     if (pairPlaces != null && pairPlaces.length() > 0)
                         generatePlaceCards(pairPlaces, categoryCardHolder, holder);
+                    if (imageMap.size() > 0)
+                        setImagesForPlaces();
 
                     // if no places for category found then remove it
                     if (categoryCardHolder.getChildCount() == 0) {
@@ -646,10 +660,12 @@ public class ApplicationActivityController extends AppCompatActivity {
                         LinearLayout pairHolder = (LinearLayout) getLayoutInflater().inflate(R.layout.location_pair_holder, viewAllHolder, false);
                         viewAllHolder.addView(pairHolder);
                         if (viewAllHolder != null) {
-                            System.out.println(categories[index].toString() + " TEST");
+                            imageMap.clear();
                             JSONArray places = getPlaces(categories[index].toString(), categories[index], 20);
                             if (places != null && places.length() > 0)
                                 generatePlaceCards(places, pairHolder, viewAllHolder);
+                            if (imageMap.size() > 0)
+                                setImagesForPlaces();
                         }
                     }));
                 }
@@ -768,27 +784,10 @@ public class ApplicationActivityController extends AppCompatActivity {
                     continue;
                 }
 
-                // Dp to px scale
-                float scale = this.getResources().getDisplayMetrics().density;
-
-                // Get image from API using place photo reference
+                // Get photo reference for image and save it in imageMap to multi thread api calls later to produce the images
                 String photoRef = place.getJSONArray("photos").getJSONObject(0).getString("photo_reference");
-                byte[] imageUrl = mMapsApiCaller.getImageURLFromPhotoReference(photoRef, (int)(150 * scale + 0.5f), (int) (110 * scale + 0.5f));
-                if (imageUrl == null) {
-                    Log.e("Warning", "Couldn't load photo for location");
-                    continue;
-                }
-
-                // Convert API response into image bitmap
-                Bitmap imageBitMap = BitmapFactory.decodeByteArray(imageUrl, 0, imageUrl.length);
-                if (imageBitMap == null) {
-                    Log.d("bitmaptest", imageUrl.toString());
-                    continue;
-                }
-
-                // Set image
                 ImageView imageView = locationView.findViewById(R.id.locationViewImage);
-                imageView.setImageBitmap(imageBitMap);
+                imageMap.put(imageView, photoRef);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -887,6 +886,45 @@ public class ApplicationActivityController extends AppCompatActivity {
         IVParty.setTranslationY(0f);
 
         createButton.setTranslationY(1340f);
+    }
+
+    private void setImagesForPlaces() {
+        ExecutorService executor = Executors.newFixedThreadPool(8);
+
+        imageMap.forEach((view, photoRef) -> {
+            Runnable call = new Runnable() {
+                @Override
+                public void run() {
+                    // Dp to px scale
+                    DisplayMetrics displayMetrics = new DisplayMetrics();
+                    getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+                    float scale = displayMetrics.density;
+
+                    byte[] imageUrl = mMapsApiCaller.getImageURLFromPhotoReference(photoRef, (int)(150 * scale + 0.5f), (int) (110 * scale + 0.5f));
+                    if (imageUrl == null) {
+                        Log.e("Warning", "Couldn't load photo for location");
+                        return;
+                    }
+
+                    // Convert API response into image bitmap
+                    Bitmap imageBitMap = BitmapFactory.decodeByteArray(imageUrl, 0, imageUrl.length);
+                    if (imageBitMap == null) {
+                        Log.d("bitmaptest", imageUrl.toString());
+                        return;
+                    }
+
+                    // Set image
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.setImageBitmap(imageBitMap);
+                        }
+                    });
+
+                }
+            };
+            executor.execute(call);
+        });
     }
 }
 
