@@ -6,25 +6,32 @@
 
     <item
         android:id="@+id/nav_home"
-        android:icon="@drawable/bicycle"
+        android:checkable="false"
+        android:icon="@drawable/home"
+        android:iconTint="#FFFFFF"
+        android:iconTintMode="add"
         android:title="Home" />
     <item
         android:id="@+id/nav_profile"
+        android:checkable="false"
         android:icon="@drawable/user"
         android:title="Profile" />
 
     <item
         android:id="@+id/nav_leaderboards"
+        android:checkable="false"
         android:icon="@drawable/crown"
         android:title="Leaderboards" />
 
     <item
         android:id="@+id/nav_friends"
+        android:checkable="false"
         android:icon="@drawable/friends"
         android:title="Friends" />
 
     <item
         android:id="@+id/nav_log_out"
+        android:checkable="false"
         android:icon="@drawable/exit"
         android:title="Log out" />
 

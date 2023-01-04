@@ -17,7 +17,7 @@
         tools:context=".controllers.MapsActivityController" />
 
     <Button
-        android:id="@+id/finishRoute"
+        android:id="@+id/cancelRoute"
         android:layout_width="180dp"
         android:layout_height="48dp"
         android:backgroundTint="@color/red_shade_1"
@@ -37,7 +37,7 @@
         tools:ignore="TextContrastCheck" />
 
     <Button
-        android:id="@+id/finishRoute2"
+        android:id="@+id/finishRoute"
         android:layout_width="180dp"
         android:layout_height="48dp"
         android:layout_marginTop="500dp"

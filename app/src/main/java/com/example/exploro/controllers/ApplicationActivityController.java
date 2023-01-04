@@ -28,7 +28,6 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.example.exploro.Location;
 import com.example.exploro.DataObservable;
 
 import androidx.fragment.app.FragmentManager;
@@ -39,6 +38,8 @@ import com.example.exploro.MapsAPICaller;
 import com.example.exploro.MessageHelper;
 import com.example.exploro.R;
 import com.example.exploro.RunnableWithIndex;
+import com.example.exploro.models.UserModel;
+import com.example.exploro.models.schemas.User;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationView;
@@ -47,7 +48,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -64,6 +65,7 @@ public class ApplicationActivityController extends AppCompatActivity {
     private DataObservable mDataObservable;
     private GoogleMap mMap;
     private LocationsBottomSheetBehavior mLocationsBottomSheetBehavior;
+    private UserModel userModel;
 
     // Caches
     private JSONArray placeCache;
@@ -90,6 +92,7 @@ public class ApplicationActivityController extends AppCompatActivity {
         // Get components
         mMessageHelper = new MessageHelper();
         mMapsApiCaller = new MapsAPICaller();
+        userModel = new UserModel(this);
 
         // Initialize cache arrays
         placeCache = new JSONArray();
@@ -99,19 +102,18 @@ public class ApplicationActivityController extends AppCompatActivity {
         imageMap = new ConcurrentHashMap<>();
 
         // Get views
+        drawerLayout = findViewById(R.id.my_drawer_layout);
+        NavigationView nw = drawerLayout.findViewById(R.id.nav_view);
         locationsScroll = findViewById(R.id.allLocationsScrollView);
         categoriesScroll = findViewById(R.id.allCategoriesView);
         View bottomSheet = (View) findViewById(R.id.locationBottomSheet);
         Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
         Button preplannedButton = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
         Button viewAllBackButton = (Button) findViewById(R.id.viewAllBackButton);
-        /*
-        ImageView IVFood = (ImageView) findViewById(R.id.imageViewFood);
-        ImageView IVPub = (ImageView) findViewById(R.id.imageViewPub);
-        ImageView IVPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
-        ImageView IVMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
-        ImageView IVParty = (ImageView) findViewById(R.id.imageViewParty);
-         */
+
+        TextView usernameText = (TextView) nw.getHeaderView(0).findViewById(R.id.userNameText);
+        TextView userUsernameText = (TextView) nw.getHeaderView(0).findViewById(R.id.userUsernameText);
+
         RelativeLayout RLFood = (RelativeLayout) findViewById(R.id.RLFood);
         RelativeLayout RLPub = (RelativeLayout) findViewById(R.id.RLPub);
         RelativeLayout RLPerfect = (RelativeLayout) findViewById(R.id.RLPerfect);
@@ -184,7 +186,19 @@ public class ApplicationActivityController extends AppCompatActivity {
             }
         });
 
-        drawerLayout = findViewById(R.id.my_drawer_layout);
+        // Set navbar header to user info
+        userModel.findUsernameInUsers(getIntent().getStringExtra("USER_username"), new UserModel.ResultStatus() {
+            @Override
+            public void resultLoaded(List<User> users) {
+                if (users.size() == 0)
+                    return;
+                User user = users.get(0);
+                usernameText.setText(user.getName());
+                userUsernameText.setText(user.getUsername());
+            }
+        });
+
+
         Button drawerToggle = (Button) findViewById(R.id.sideNavBarToggle);
         drawerToggle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,8 +209,6 @@ public class ApplicationActivityController extends AppCompatActivity {
                     drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-
-        NavigationView nw = drawerLayout.findViewById(R.id.nav_view);
 
         // Handle nav bar inputs
         nw.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
@@ -853,6 +865,12 @@ public class ApplicationActivityController extends AppCompatActivity {
         RLParty.setAlpha(0f);
         preplannedButton.setAlpha(1f);
 
+        RLFood.setEnabled(false);
+        RLPub.setEnabled(false);
+        RLPerfect.setEnabled(false);
+        RLMustSee.setEnabled(false);
+        RLParty.setEnabled(false);
+
         RLFood.setTranslationY(initOffset);
         RLPub.setTranslationY(initOffset);
         RLPerfect.setTranslationY(initOffset);
@@ -867,24 +885,30 @@ public class ApplicationActivityController extends AppCompatActivity {
     private void buttonsFinalState() {
         Button createButton = (Button) findViewById(R.id.createOwnRouteBtn);
         Button preplannedButton = (Button) findViewById(R.id.seePrePlannedRoutesBtn);
-        ImageView IVFood = (ImageView) findViewById(R.id.imageViewFood);
-        ImageView IVPub = (ImageView) findViewById(R.id.imageViewPub);
-        ImageView IVPerfect = (ImageView) findViewById(R.id.imageViewPerfect);
-        ImageView IVMustSee = (ImageView) findViewById(R.id.imageViewMustSee);
-        ImageView IVParty = (ImageView) findViewById(R.id.imageViewParty);
+        RelativeLayout RLFood = (RelativeLayout) findViewById(R.id.RLFood);
+        RelativeLayout RLPub = (RelativeLayout) findViewById(R.id.RLPub);
+        RelativeLayout RLPerfect = (RelativeLayout) findViewById(R.id.RLPerfect);
+        RelativeLayout RLMustSee = (RelativeLayout) findViewById(R.id.RLMustSee);
+        RelativeLayout RLParty = (RelativeLayout) findViewById(R.id.RLParty);
 
-        IVFood.setAlpha(1f);
-        IVPub.setAlpha(1f);
-        IVPerfect.setAlpha(1f);
-        IVMustSee.setAlpha(1f);
-        IVParty.setAlpha(1f);
+        RLFood.setAlpha(1f);
+        RLPub.setAlpha(1f);
+        RLPerfect.setAlpha(1f);
+        RLMustSee.setAlpha(1f);
+        RLParty.setAlpha(1f);
         preplannedButton.setAlpha(0f);
 
-        IVFood.setTranslationY(0f);
-        IVPub.setTranslationY(0f);
-        IVPerfect.setTranslationY(0f);
-        IVMustSee.setTranslationY(0f);
-        IVParty.setTranslationY(0f);
+        RLFood.setEnabled(true);
+        RLPub.setEnabled(true);
+        RLPerfect.setEnabled(true);
+        RLMustSee.setEnabled(true);
+        RLParty.setEnabled(true);
+
+        RLFood.setTranslationY(0f);
+        RLPub.setTranslationY(0f);
+        RLPerfect.setTranslationY(0f);
+        RLMustSee.setTranslationY(0f);
+        RLParty.setTranslationY(0f);
 
         createButton.setTranslationY(1340f);
     }

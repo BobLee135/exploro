@@ -1,25 +1,14 @@
 package com.example.exploro.controllers;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.os.StrictMode;
-import android.util.AttributeSet;
 import android.util.Log;
-import android.util.Size;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.exploro.BuildConfig;
@@ -27,14 +16,12 @@ import com.example.exploro.Location;
 import com.example.exploro.MapsAPICaller;
 import com.example.exploro.R;
 import com.example.exploro.models.UserModel;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.example.exploro.databinding.ActivityMapsBinding;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -82,8 +69,8 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         mapFragment.getMapAsync(this);
 
 
-        Button finish = (Button) findViewById(R.id.finishRoute);
-        finish.setOnClickListener(new View.OnClickListener() {
+        Button cancel = (Button) findViewById(R.id.cancelRoute);
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -97,7 +84,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
                 currentActivity.finish();
             }
         });
-        Button finishRoute = (Button) findViewById(R.id.finishRoute2);
+        Button finishRoute = (Button) findViewById(R.id.finishRoute);
         finishRoute.setOnClickListener(new View.OnClickListener(){
 
             @Override
@@ -145,10 +132,6 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
                         public void run() {
                             for (int i = 0; i < dsts.length; i++) {
                                 String placeName = dsts[i].getName();
-                                System.out.println(placeName);
-                                if (placeName == null){
-                                    System.out.println("NULL??");
-                                }
                                 nameList.add(placeName);
                                 // Add location on map
                                 MarkerOptions place = new MarkerOptions().position(dsts[i].getLocation()).title(dsts[i].getAddress()).snippet(dsts[i].getName());
@@ -194,9 +177,6 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
             JSONObject route = routesArray.getJSONObject(0);
             JSONObject overview_polyline = route.getJSONObject("overview_polyline");
             String encodedString = overview_polyline.getString("points");
-
-
-            Log.d("TESTPRINT", "HEJSAN");
 
             List<LatLng> list = PolyUtil.decode(encodedString);
 

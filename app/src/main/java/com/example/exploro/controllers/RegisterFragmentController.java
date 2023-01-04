@@ -1,5 +1,6 @@
 package com.example.exploro.controllers;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -73,6 +75,9 @@ public class RegisterFragmentController extends Fragment {
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Hide keyboard
+                hideKeyboard(v);
+
                 // Get values
                 String fullName = nameInputField.getText().toString();
                 String email = emailInputField.getText().toString();
@@ -211,6 +216,11 @@ public class RegisterFragmentController extends Fragment {
                 .replace(R.id.fragmentContainer, fragmentController, "loginFragment")
                 .addToBackStack(null)
                 .commit();
+    }
+
+    private void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
 }
