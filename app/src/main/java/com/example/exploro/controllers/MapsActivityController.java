@@ -103,10 +103,11 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
             @Override
             public void onClick(View view) {
                 for (String place : nameList){
-                    System.out.println(username);
                     userModel.addTrip(username, place);
-                    System.out.println(place);
                 }
+                userModel.addUserExperience(username, 10);
+                Activity currentActivity = getSupportFragmentManager().findFragmentById(R.id.miniMap).getActivity();
+                currentActivity.finish();
             }
         });
     }
@@ -270,7 +271,8 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         query += "&inputtype=textquery&locationbias=circle:";
         query += 2000; // radius of place search
         query += "@" + MyLocationListener.currentLocation.latitude + "," + MyLocationListener.currentLocation.longitude;
-        query += "&fields=formatted_address%2Cgeometry%2Cphoto&key=AIzaSyBUhyD3CQzp538kladlXAK1dBuZXduTjvs";
+        query += "&fields=formatted_address%2Cgeometry%2Cphoto&key=" + BuildConfig.MAPS_API_KEY;
+        System.out.println(query);
 
         // Build the location object from the query response
         Location destination = null;

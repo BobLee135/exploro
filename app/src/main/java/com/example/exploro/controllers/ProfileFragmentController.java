@@ -1,5 +1,6 @@
 package com.example.exploro.controllers;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -19,8 +20,12 @@ import com.example.exploro.models.UserModel;
 import com.example.exploro.models.schemas.Trips;
 import com.example.exploro.models.schemas.User;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 
@@ -69,9 +74,23 @@ public class ProfileFragmentController extends Fragment {
         profileName.setText(name);
 
         // Get all trips
-        userModel.getUserTrips(name,new UserModel.TripsResultStatus(){
+        userModel.getUserTrips(username,new UserModel.TripsResultStatus(){
             @Override
             public void tripsResultLoaded(List<Trips> trips) {
+                Collections.sort(trips, new Comparator<Trips>() {
+                    @Override
+                    public int compare(Trips trip1, Trips trip2) {
+                        @SuppressLint("SimpleDateFormat") DateFormat date = new SimpleDateFormat("yyyy mm dd");
+                        try {
+                            Date firstDate = date.parse(trip1.getDate());
+                            Date secondDate = date.parse(trip2.getDate());
+                            return firstDate.compareTo(secondDate);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        return 0;
+                    }
+                });
                 adapter = new ProfileAdapter(trips);
                 recyclerView.setAdapter(adapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

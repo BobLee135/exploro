@@ -20,7 +20,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class UserModel {
@@ -238,7 +240,9 @@ public class UserModel {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
                 user.experience += experience;
-                db.child("users").child(user.username).setValue(user);
+                Map<String, Object> updatedValues = new HashMap<>();
+                updatedValues.put("experience", user.experience);
+                db.child("users").child(user.username).updateChildren(updatedValues);
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
@@ -255,6 +259,7 @@ public class UserModel {
         trips.date = dateFormat.format(currentDate);
         trips.place = place;
         db.child("users").child(username).child("trips").child(place).setValue(trips);
+        System.out.println("LA TILL TRIPS");
     }
     public void addRoute(String username, ArrayList<Trips> route){
         String id = db.child("users").child(username).child("routes").push().getKey();
