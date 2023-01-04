@@ -89,19 +89,21 @@ public class RegisterFragmentController extends Fragment {
                     @Override
                     public void resultLoaded(List<User> users) {
                         if (!users.isEmpty() && users.get(0) != null) {
-                            Log.d("RESPONSE", users.get(0).getName().toString());
+                            Log.d("RESPONSE1", users.get(0).getName().toString());
                             mMessageHelper.displaySnackbar("Username already taken", 3, "Error", v);
                             return;
                         }
 
                         // Check if email is available
-                        userModel.findEmailInUsers(email, new UserModel.ResultStatus() {
+                        userModel.getAllUserObjects(new UserModel.ResultStatus() {
                             @Override
                             public void resultLoaded(List<User> users) {
-                                if (!users.isEmpty() && users.get(0) != null) {
-                                    Log.d("RESPONSE", users.get(0).getEmail().toString());
-                                    mMessageHelper.displaySnackbar("Email already taken", 3, "Error", v);
-                                    return;
+                                for (User user : users){
+                                    if (user.email.equals(email)){
+                                        Log.d("RESPONSE2", user.getEmail().toString());
+                                        mMessageHelper.displaySnackbar("Email already taken", 3, "Error", v);
+                                        return;
+                                    }
                                 }
                                 // Create new user in database
                                 User user = userModel.createNewUser(fullName, username, email, password);
