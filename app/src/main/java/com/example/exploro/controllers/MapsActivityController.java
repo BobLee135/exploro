@@ -271,7 +271,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
         query += "&inputtype=textquery&locationbias=circle:";
         query += 2000; // radius of place search
         query += "@" + MyLocationListener.currentLocation.latitude + "," + MyLocationListener.currentLocation.longitude;
-        query += "&fields=formatted_address%2Cgeometry%2Cphoto&key=" + BuildConfig.MAPS_API_KEY;
+        query += "&fields=formatted_address%2Cgeometry%2Cphoto%2Cname&key=" + BuildConfig.MAPS_API_KEY;
         System.out.println(query);
 
         // Build the location object from the query response
@@ -287,7 +287,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
                 photo = new MapsAPICaller().getImageURLFromPhotoReference(ref, 150, 150);
             }
             destination = new Location(
-                    place,
+                    jsonResponse.getJSONArray("candidates").getJSONObject(0).getString("name"),
                     jsonResponse.getJSONArray("candidates").getJSONObject(0).getString("formatted_address"),
                     new LatLng(
                         jsonResponse.getJSONArray("candidates").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat"),

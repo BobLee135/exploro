@@ -263,6 +263,7 @@ public class SelectDestinations extends Fragment {
     private void shipAndSendRoute(String[] destinations) {
         Intent intent = new Intent(getActivity(), MapsActivityController.class);
         intent.putExtra("destinationList", destinations);
+        intent.putExtra("USER_username", getActivity().getIntent().getStringExtra("USER_username"));
         startActivity(intent);
     }
 
