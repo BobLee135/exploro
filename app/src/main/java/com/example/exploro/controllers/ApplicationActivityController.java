@@ -820,6 +820,7 @@ public class ApplicationActivityController extends AppCompatActivity {
     private void shipAndSendRoute(String[] destinations) {
         Intent intent = new Intent(this, MapsActivityController.class);
         intent.putExtra("destinationList", destinations);
+        intent.putExtra("USER_username", getIntent().getStringExtra("USER_username"));
         startActivity(intent);
     }
 

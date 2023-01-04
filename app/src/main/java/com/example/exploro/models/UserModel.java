@@ -39,7 +39,9 @@ public class UserModel {
         db = FirebaseDatabase.getInstance().getReference();
         //addUser("Dennis", "test", "dennis@gmail.com","898979");
     }
-
+    public UserModel(){
+        db = FirebaseDatabase.getInstance().getReference();
+    }
 
     /**
      * Authenticate user against database
@@ -246,6 +248,7 @@ public class UserModel {
         });
     }
     public void addTrip(String username, String place){
+        System.out.println(username + place);
         Date currentDate = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy MM dd");
         Trips trips = new Trips();
