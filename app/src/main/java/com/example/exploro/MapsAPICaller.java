@@ -144,7 +144,6 @@ public class MapsAPICaller {
      *  by specified type that also matches search query sorted by rating.
      *
      * @param query - Search query to pull results from
-     * @param location - Location to search from
      * @param currentlyOpen - If place has to be currently open or not
      * @param radius - How far away from location the places can be retrieved from in meters
      * @param type - The type of places to retrieve
@@ -152,14 +151,13 @@ public class MapsAPICaller {
      * @return - Found places matching parameters
      */
     public JSONArray getPlacesFromQuery(String query, boolean currentlyOpen, int radius, PlaceTypes type, int limit) {
-        String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
-        url += "query=" + query;
+        String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?";
         url += "&location=" + MyLocationListener.currentLocation.latitude + "," + MyLocationListener.currentLocation.longitude;
         //url += "&opennow=" + currentlyOpen;
         url += "&radius=" + radius;
         url += "&type=" + type.toString();
         url += "&key=" + BuildConfig.MAPS_API_KEY;
-        System.out.println("QUERY " + url);
+        System.out.println(url);
 
         OkHttpClient requestClient = new OkHttpClient().newBuilder().build();
         Request request = new Request.Builder().url(url).get().build();
@@ -189,12 +187,18 @@ public class MapsAPICaller {
                     String valA = new String();
                     String valB = new String();
                     try {
+                        if (!a.has("rating")) return -1;
+                        if (!b.has("rating")) return 1;
                         valA = valA + (a.getDouble("rating") * a.getInt("user_ratings_total"));
                         valB = valB + (b.getDouble("rating") * b.getInt("user_ratings_total"));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    return valA.compareToIgnoreCase(valB);
+                    float fa = new Float(valA);
+                    float fb = new Float(valB);
+                    if (fa == fb) return 0;
+                    else if (fa > fb) return 1;
+                    return -1;
                 }
             });
 
@@ -202,206 +206,6 @@ public class MapsAPICaller {
             limit = (limit < resultList.size()) ? limit : resultList.size();
             for (int i = 0; i < limit; i++)
                 returnArray.put(resultList.get(i));
-
-            return returnArray;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /** Use Text Search google maps api to get all places nearby in a radius of a location
-     *  by specified type that also matches search query sorted by rating.
-     *
-     * @param query - Search query to pull results from
-     * @param location - Location to search from
-     * @param radius - How far away from location the places can be retrieved from in meters
-     * @param type - The type of places to retrieve
-     * @param limit - The maximum limit of places to retrieve from query
-     * @return - Found places matching parameters
-     */
-    public JSONArray getPlacesFromQuery(String query, LatLng location, int radius, PlaceTypes type, int limit) {
-        String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
-        url += "query=" + query;
-        url += "&location=" + location;
-        url += "&radius=" + radius;
-        url += "&type=";
-        url += "&key=" + BuildConfig.MAPS_API_KEY;
-
-        OkHttpClient requestClient = new OkHttpClient().newBuilder().build();
-        Request request = new Request.Builder().url(url).get().build();
-        Response response = null;
-        try {
-            response = requestClient.newCall(request).execute();
-            JSONObject responseBody = new JSONObject(response.body().string());
-            String status = responseBody.getString("status");
-
-            if (status != "OK")
-                return null;
-
-            JSONArray results = responseBody.getJSONArray("results");
-            JSONArray returnArray = new JSONArray();
-
-            // Sort Results based on rating
-            List<JSONObject> resultList = new ArrayList<JSONObject>();
-            for (int i = 0; i < results.length(); i++)
-                resultList.add(results.getJSONObject(i));
-
-            Collections.sort(resultList, new Comparator<JSONObject>() {
-                @Override
-                public int compare(JSONObject a, JSONObject b) {
-                    String valA = new String();
-                    String valB = new String();
-                    try {
-                        valA = valA + (a.getDouble("rating") * a.getInt("user_ratings_total"));
-                        valB = valB + (b.getDouble("rating") * b.getInt("user_ratings_total"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return valA.compareToIgnoreCase(valB);
-                }
-            });
-
-            Collections.reverse(resultList);
-            for (int i = 0; i < limit; i++)
-                returnArray.put(resultList.get(i));
-
-
-
-            return returnArray;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /** Use Text Search google maps api to get all places nearby in a radius of a location
-     *  by specified type that also matches search query sorted by rating.
-     *
-     * @param query - Search query to pull results from
-     * @param location - Location to search from
-     * @param currentlyOpen - If place has to be currently open or not
-     * @param radius - How far away from location the places can be retrieved from in meters
-     * @param type - The type of places to retrieve
-     * @return Found places matching parameters
-     */
-    public JSONArray getPlacesFromQuery(String query, LatLng location, boolean currentlyOpen, int radius, PlaceTypes type) {
-        String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
-        url += "query=" + query;
-        url += "&location=" + location;
-        url += "&opennow=" + currentlyOpen;
-        url += "&radius=" + radius;
-        url += "&type=";
-        url += "&key=" + BuildConfig.MAPS_API_KEY;
-
-        OkHttpClient requestClient = new OkHttpClient().newBuilder().build();
-        Request request = new Request.Builder().url(url).get().build();
-        Response response = null;
-        try {
-            response = requestClient.newCall(request).execute();
-            JSONObject responseBody = new JSONObject(response.body().string());
-            String status = responseBody.getString("status");
-
-            if (status != "OK")
-                return null;
-
-            JSONArray results = responseBody.getJSONArray("results");
-            JSONArray returnArray = new JSONArray();
-
-            // Sort Results based on rating
-            List<JSONObject> resultList = new ArrayList<JSONObject>();
-            for (int i = 0; i < results.length(); i++)
-                resultList.add(results.getJSONObject(i));
-
-            Collections.sort(resultList, new Comparator<JSONObject>() {
-                @Override
-                public int compare(JSONObject a, JSONObject b) {
-                    String valA = new String();
-                    String valB = new String();
-                    try {
-                        valA = valA + (a.getDouble("rating") * a.getInt("user_ratings_total"));
-                        valB = valB + (b.getDouble("rating") * b.getInt("user_ratings_total"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return valA.compareToIgnoreCase(valB);
-                }
-            });
-
-            Collections.reverse(resultList);
-            for (int i = 0; i < resultList.size(); i++)
-                returnArray.put(resultList.get(i));
-
-
-            return returnArray;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /** Use Text Search google maps api to get all places nearby in a radius of a location
-     *  by specified type that also matches search query sorted by rating.
-     *
-     * @param query - Search query to pull results from
-     * @param location - Location to search from
-     * @param radius - How far away from location the places can be retrieved from in meters
-     * @param type - The type of places to retrieve
-     * @return - Found places matching parameters
-     */
-    public JSONArray getPlacesFromQuery(String query, LatLng location, int radius, PlaceTypes type) {
-        String url = "https://maps.googleapis.com/maps/api/place/textsearch/json?";
-        url += "query=" + query;
-        url += "&location=" + location;
-        url += "&radius=" + radius;
-        url += "&type=";
-        url += "&key=" + BuildConfig.MAPS_API_KEY;
-
-        OkHttpClient requestClient = new OkHttpClient().newBuilder().build();
-        Request request = new Request.Builder().url(url).get().build();
-        Response response = null;
-        try {
-            response = requestClient.newCall(request).execute();
-            JSONObject responseBody = new JSONObject(response.body().string());
-            String status = responseBody.getString("status");
-
-            if (status != "OK")
-                return null;
-
-            JSONArray results = responseBody.getJSONArray("results");
-            JSONArray returnArray = new JSONArray();
-
-            // Sort Results based on rating
-            List<JSONObject> resultList = new ArrayList<JSONObject>();
-            for (int i = 0; i < results.length(); i++)
-                resultList.add(results.getJSONObject(i));
-
-            Collections.sort(resultList, new Comparator<JSONObject>() {
-                @Override
-                public int compare(JSONObject a, JSONObject b) {
-                    String valA = new String();
-                    String valB = new String();
-                    try {
-                        valA = valA + (a.getDouble("rating") * a.getInt("user_ratings_total"));
-                        valB = valB + (b.getDouble("rating") * b.getInt("user_ratings_total"));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return valA.compareToIgnoreCase(valB);
-                }
-            });
-
-            Collections.reverse(resultList);
-            for (int i = 0; i < resultList.size(); i++)
-                returnArray.put(resultList.get(i));
-
-
 
             return returnArray;
         } catch (IOException e) {
