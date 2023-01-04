@@ -26,6 +26,7 @@ import com.example.exploro.BuildConfig;
 import com.example.exploro.Location;
 import com.example.exploro.MapsAPICaller;
 import com.example.exploro.R;
+import com.example.exploro.models.UserModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,6 +47,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,12 +62,16 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
     private ActivityMapsBinding binding;
     private String URL = "";
     private Location[] dsts;
+    private ArrayList<String> nameList = new ArrayList<String>();
+    private UserModel userModel = new UserModel();
 
     private static Marker userLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        String username = getIntent().getStringExtra("USER_username");
 
         binding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -89,6 +95,18 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
                 // Jump back to main page
                 Activity currentActivity = getSupportFragmentManager().findFragmentById(R.id.miniMap).getActivity();
                 currentActivity.finish();
+            }
+        });
+        Button finishRoute = (Button) findViewById(R.id.finishRoute2);
+        finishRoute.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View view) {
+                for (String place : nameList){
+                    System.out.println(username);
+                    userModel.addTrip(username, place);
+                    System.out.println(place);
+                }
             }
         });
     }
@@ -125,8 +143,14 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
                         @Override
                         public void run() {
                             for (int i = 0; i < dsts.length; i++) {
+                                String placeName = dsts[i].getName();
+                                System.out.println(placeName);
+                                if (placeName == null){
+                                    System.out.println("NULL??");
+                                }
+                                nameList.add(placeName);
                                 // Add location on map
-                                MarkerOptions place = new MarkerOptions().position(dsts[i].getLocation()).title(dsts[i].getAddress());
+                                MarkerOptions place = new MarkerOptions().position(dsts[i].getLocation()).title(dsts[i].getAddress()).snippet(dsts[i].getName());
                                 googleMap.addMarker(place);
 
                                 // Add image for location on map
@@ -302,7 +326,7 @@ public class MapsActivityController extends FragmentActivity implements OnMapRea
                 }
 
                 Location destination = new Location(
-                        place,
+                        jsonResponse.getJSONArray("results").getJSONObject(i).getString("name"),
                         jsonResponse.getJSONArray("results").getJSONObject(i).getString("formatted_address"),
                         new LatLng(
                                 jsonResponse.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat"),
