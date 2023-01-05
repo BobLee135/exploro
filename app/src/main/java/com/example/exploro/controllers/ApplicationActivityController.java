@@ -430,26 +430,13 @@ public class ApplicationActivityController extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        // Create array of threads
-        int numThreads = 16;
-        Thread[] threads = new Thread[numThreads];
-        for (int i = 0; i < threads.length; i++) {
-            threads[i] = new Thread();
-        }
 
         // Get necessary components to generate category cards
         LayoutInflater layoutInflater = getLayoutInflater();
         LinearLayout categoryHolder = findViewById(R.id.locationCategoryHolder);
-        ExecutorService executor = Executors.newFixedThreadPool(numThreads);
 
         // Execute
-        generateCategoryCardsWithContent(executor, categories, categoryHolder, layoutInflater);
-        executor.shutdown();
-        try {
-            executor.awaitTermination(1, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        generateCategoryCardsWithContent(categories, categoryHolder, layoutInflater);
     }
 
     /**
@@ -480,6 +467,8 @@ public class ApplicationActivityController extends AppCompatActivity {
 
         // Cancel button
         Button closePlaceInfoButton = (Button) dialog.findViewById(R.id.closePlaceInfoButton);
+
+
 
         // Set values to view
         placeInfoName.setText(placeName);
@@ -601,88 +590,81 @@ public class ApplicationActivityController extends AppCompatActivity {
     /**
      * Generate category cards filled with place cards as content
      *
-     * @param executor - Executor service to run threads
      * @param categories - categories array to go from
      * @param holder - Layout to hold category cards
      * @param inflater - Layout inflater
      */
-    private void generateCategoryCardsWithContent(Executor executor, MapsAPICaller.PlaceTypes[] categories, LinearLayout holder, LayoutInflater inflater) {
+    private void generateCategoryCardsWithContent(MapsAPICaller.PlaceTypes[] categories, LinearLayout holder, LayoutInflater inflater) {
         for (int i = 0; i < categories.length; i++) {
-            // Create new card
-            RunnableWithIndex r = new RunnableWithIndex(i) {
-                @Override
-                public void run() {
-                    View categoryCard = inflater.inflate(R.layout.location_category_view, holder, false);
-                    holder.addView(categoryCard);
-                    LinearLayout categoryCardHolder = categoryCard.findViewById(R.id.locationViewHolder);
-                    imageMap.clear();
-                    JSONArray pairPlaces = getPlaces(categories[index].toString(), categories[index], 2);
+            View categoryCard = inflater.inflate(R.layout.location_category_view, holder, false);
+            holder.addView(categoryCard);
+            LinearLayout categoryCardHolder = categoryCard.findViewById(R.id.locationViewHolder);
+            imageMap.clear();
+            JSONArray pairPlaces = getPlaces(categories[i].toString(), categories[i], 2);
 
-                    if (pairPlaces != null && pairPlaces.length() > 0)
-                        generatePlaceCards(pairPlaces, categoryCardHolder, holder);
+            if (pairPlaces != null && pairPlaces.length() > 0)
+                generatePlaceCards(pairPlaces, categoryCardHolder, holder);
+            if (imageMap.size() > 0)
+                setImagesForPlaces();
+
+            // if no places for category found then remove it
+            if (categoryCardHolder.getChildCount() == 0) {
+                holder.removeView(categoryCard);
+            }
+
+            // Set card title text
+            TextView categoryTitle = categoryCard.findViewById(R.id.locationsCategoryText0);
+
+            // Remove underscore '_' (if it exists in title)
+            char[] tempTitle = categories[i].toString().toCharArray();
+            for (int c = 0; c < tempTitle.length; c++) {
+                if (tempTitle[c] == '_')
+                    tempTitle[c] = ' ';
+            }
+
+            String title = new String(tempTitle);
+            title = title.substring(0, 1).toUpperCase(Locale.ROOT) + title.substring(1);
+            categoryTitle.setText(title);
+
+            final int index = i;
+            // Set click listener for view all button
+            View viewAll = categoryCard.findViewById(R.id.viewAllText0);
+            viewAll.setOnClickListener((v -> {
+                locationsScroll.setVisibility(View.VISIBLE);
+                categoriesScroll.setVisibility(View.INVISIBLE);
+                findViewById(R.id.viewAllBackButton).setVisibility(View.VISIBLE);
+                LinearLayout viewAllHolder = locationsScroll.findViewById(R.id.categoryPlaceViewHolder);
+                TextView headerTitle = (TextView) viewAllHolder.findViewById(R.id.categoryTitleText);
+
+                // If previous load was of the same category then no need to reload it
+                if (headerTitle.getText().equals("Top " + categoryTitle.getText() + "s"))
+                    return;
+
+                headerTitle.setText("Top " + categoryTitle.getText() + "s");
+
+                // Clear up view from previous uses
+                int viewAllHolderChildrenCount = viewAllHolder.getChildCount();
+                int count = 0;
+                for (int j = 0; j < viewAllHolderChildrenCount; j++) {
+                    View child = viewAllHolder.getChildAt(count);
+                    if (child != headerTitle)
+                        viewAllHolder.removeView(child);
+                    else
+                        count++;
+                }
+
+                // Generate new views
+                LinearLayout pairHolder = (LinearLayout) getLayoutInflater().inflate(R.layout.location_pair_holder, viewAllHolder, false);
+                viewAllHolder.addView(pairHolder);
+                if (viewAllHolder != null) {
+                    imageMap.clear();
+                    JSONArray places = getPlaces(categories[index].toString(), categories[index], 20);
+                    if (places != null && places.length() > 0)
+                        generatePlaceCards(places, pairHolder, viewAllHolder);
                     if (imageMap.size() > 0)
                         setImagesForPlaces();
-
-                    // if no places for category found then remove it
-                    if (categoryCardHolder.getChildCount() == 0) {
-                        holder.removeView(categoryCard);
-                    }
-
-                    // Set card title text
-                    TextView categoryTitle = categoryCard.findViewById(R.id.locationsCategoryText0);
-
-                    // Remove underscore '_' (if it exists in title)
-                    char[] tempTitle = categories[index].toString().toCharArray();
-                    for (int c = 0; c < tempTitle.length; c++) {
-                        if (tempTitle[c] == '_')
-                            tempTitle[c] = ' ';
-                    }
-
-                    String title = new String(tempTitle);
-                    title = title.substring(0, 1).toUpperCase(Locale.ROOT) + title.substring(1);
-                    categoryTitle.setText(title);
-
-                    // Set click listener for view all button
-                    View viewAll = categoryCard.findViewById(R.id.viewAllText0);
-                    viewAll.setOnClickListener((v -> {
-                        locationsScroll.setVisibility(View.VISIBLE);
-                        categoriesScroll.setVisibility(View.INVISIBLE);
-                        findViewById(R.id.viewAllBackButton).setVisibility(View.VISIBLE);
-                        LinearLayout viewAllHolder = locationsScroll.findViewById(R.id.categoryPlaceViewHolder);
-                        TextView headerTitle = (TextView) viewAllHolder.findViewById(R.id.categoryTitleText);
-
-                        // If previous load was of the same category then no need to reload it
-                        if (headerTitle.getText().equals("Top " + categoryTitle.getText() + "s"))
-                            return;
-
-                        headerTitle.setText("Top " + categoryTitle.getText() + "s");
-
-                        // Clear up view from previous uses
-                        int viewAllHolderChildrenCount = viewAllHolder.getChildCount();
-                        int count = 0;
-                        for (int i = 0; i < viewAllHolderChildrenCount; i++) {
-                            View child = viewAllHolder.getChildAt(count);
-                            if (child != headerTitle)
-                                viewAllHolder.removeView(child);
-                            else
-                                count++;
-                        }
-
-                        // Generate new views
-                        LinearLayout pairHolder = (LinearLayout) getLayoutInflater().inflate(R.layout.location_pair_holder, viewAllHolder, false);
-                        viewAllHolder.addView(pairHolder);
-                        if (viewAllHolder != null) {
-                            imageMap.clear();
-                            JSONArray places = getPlaces(categories[index].toString(), categories[index], 20);
-                            if (places != null && places.length() > 0)
-                                generatePlaceCards(places, pairHolder, viewAllHolder);
-                            if (imageMap.size() > 0)
-                                setImagesForPlaces();
-                        }
-                    }));
                 }
-            };
-            executor.execute(r);
+            }));
         }
     }
 

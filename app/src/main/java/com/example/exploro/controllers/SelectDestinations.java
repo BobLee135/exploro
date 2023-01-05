@@ -72,7 +72,6 @@ public class SelectDestinations extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         MapsActivityController mac = new MapsActivityController();
 
         View view = inflater.inflate(R.layout.select_fragment, container, false);
@@ -232,6 +231,12 @@ public class SelectDestinations extends Fragment {
                     // NOTICE that the input we send to the map is the locations names and not their addresses
                     destinationList[i] = currentlySelectedLocations.get(i).getName();
                 }
+
+                getActivity().findViewById(R.id.seePrePlannedRoutesBtn).setVisibility(View.VISIBLE);
+                getActivity().findViewById(R.id.createOwnRouteBtn).setVisibility(View.VISIBLE);
+                getActivity().findViewById(R.id.logo2).setVisibility(View.VISIBLE);
+                getActivity().findViewById(R.id.selectFragmentContainer).setVisibility(View.INVISIBLE);
+
                 shipAndSendRoute(destinationList);
             }
         });

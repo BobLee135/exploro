@@ -157,7 +157,6 @@ public class MapsAPICaller {
         url += "&radius=" + radius;
         url += "&type=" + type.toString();
         url += "&key=" + BuildConfig.MAPS_API_KEY;
-        System.out.println(url);
 
         OkHttpClient requestClient = new OkHttpClient().newBuilder().build();
         Request request = new Request.Builder().url(url).get().build();
