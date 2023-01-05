@@ -200,7 +200,6 @@ public class UserModel {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("firebase", "Error getting data", error.toException());
-                System.out.println("HEHEHEHEHEHEH");
                 return;
 
             }
@@ -246,8 +245,7 @@ public class UserModel {
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                System.out.println("Could not get thang");
-
+                Log.d("Error", "couldn't connect to db");
             }
         });
     }
@@ -259,7 +257,6 @@ public class UserModel {
         trips.date = dateFormat.format(currentDate);
         trips.place = place;
         db.child("users").child(username).child("trips").child(place).setValue(trips);
-        System.out.println("LA TILL TRIPS");
     }
     public void addRoute(String username, ArrayList<Trips> route){
         String id = db.child("users").child(username).child("routes").push().getKey();
@@ -294,7 +291,6 @@ public class UserModel {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("firebase", "Error getting data", error.toException());
-                System.out.println("HEHEHEHEHEHEH");
                 return;
 
             }
